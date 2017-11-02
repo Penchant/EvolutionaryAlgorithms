@@ -1,4 +1,4 @@
-# RosenbrockFunctionApproximator
+# Evolutionary Algorithms
 
 [![Build Status](https://travis-ci.org/Penchant/RosenbrockFunctionApproximator.svg?branch=master)](https://travis-ci.org/Penchant/RosenbrockFunctionApproximator)  
 Using neural network, basic backprop and radial basis function.
@@ -21,6 +21,6 @@ For help with the command line parameters, use `java -jar Rosenbrock.jar -h`
 
 
 Example:
-```
+```java
 java -jar Rosenbrock.jar -nogui -rb -ds 0 -de 20 -di 1 -hl 200,300 -d 3
 ```
