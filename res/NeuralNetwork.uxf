@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>540</x>
+      <y>40</y>
+      <w>420</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>Node
+--
+- NodeType : Type
++ Output :  Double
++ Inputs :  List&lt;Double&gt;
++ Weights :  List&lt;Double&gt;
+--
++ CalculateOutputs() : Double
++ UpdateWeights(WeightChange : List&lt;Double&gt;)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>50</x>
+      <y>440</y>
+      <w>870</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Network
+--
+- Examples: List&lt;List&lt;Double\&gt;&gt;
+- Layers: List&lt;Layer&gt;
+--
++ CreateNetwork(HiddenLayers : Int, NodesPerHiddenLayer : Int, InputCount : Int, RosenbrockDimension : Int, RadialBasisFunction : Bool)
++ ForwardPropogate(Elements : List&lt;List&lt;Double\&gt;&gt;)
++ BackPropogate (WeightUpdate : List&lt;Double&gt;)
++ CalculateError() : List&lt;Double&gt;
+- KMeansCluster(K : Int)
+- CalculateSigma()
+- Rosenbrock(Element : List&lt;Double&gt;) : Double</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>70</x>
+      <y>40</y>
+      <w>410</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>Layer
+--
+- LayerType : Type
++ Nodes : List&lt;Node&gt;
++ LayerCount : Int
+--
++ UpdateNodeWeights(Weights : List&lt;List&lt;Int\&gt;&gt;)
++ CalculateNodeOutputs() : List&lt;Double&gt;
++ CreateLayer(Nodes : Int, LayerType : Type)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>220</x>
+      <y>160</y>
+      <w>200</w>
+      <h>300</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;180.0;280.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>470</x>
+      <y>100</y>
+      <w>90</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>660</x>
+      <y>250</y>
+      <w>210</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Type
+--
+Hidden
+Output
+Input
+RBFInput
+RBFHidden</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>430</x>
+      <y>160</y>
+      <w>250</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>230.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>760</x>
+      <y>160</y>
+      <w>30</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
