@@ -17,6 +17,7 @@ import java.util.stream.IntStream;
 public class Network implements Runnable {
 
     public List<Layer> layers = new ArrayList<>();
+    public List<Chromosome> chromosomes;
 
     private Layer inputLayer;
     private List<Example> examples;
