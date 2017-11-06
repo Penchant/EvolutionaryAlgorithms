@@ -38,8 +38,8 @@ public class Main extends Application {
     public static void start(double dataGenStart, double dataGenEnd, double dataGenIncrement, List<Integer> hiddenLayers, int inputCount, boolean isRadialBasis) {
         System.out.println("Starting");
 
-        //Create network with examples from data generation
-        if(network == null) {
+        // Create network with examples from data generation
+        if (network == null) {
             network = new Network(hiddenLayers, inputCount, isRadialBasis, generateData(dataGenStart, dataGenEnd, dataGenIncrement, inputCount, Network::rosenbrock));
         }
 
