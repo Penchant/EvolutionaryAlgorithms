@@ -68,7 +68,7 @@ public class Network implements Runnable {
             layers.add(rbfHidden);
         }
 
-        layers.add(new Layer(examples.get(0).outputs.size(), Type.OUTPUT));
+        layers.add(new Layer(dimension, Type.OUTPUT));
     }
 
     public void setupExamples () {
@@ -247,7 +247,7 @@ public class Network implements Runnable {
         // Updating weights on output layer
         for (int i = 0; i < outputNodes.size(); i++) {
             Node outputNode = outputNodes.get(i);
-            outputNode.delta = -1 * (target.get(i) - outputNode.output);
+            outputNode.delta = -1 * (target.get(i) - outputNode.output)* outputNode.output * (1 - outputNode.output);;
 
             for (int j = 0; j < outputNode.newWeights.size(); j++) {
                 double weightChange = outputNode.delta * previousLayer.nodes.get(j).output;
