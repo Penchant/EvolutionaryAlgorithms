@@ -40,7 +40,6 @@ public class Main extends Application {
 
         ReadData data = new ReadData();
 
-
         // Create network with examples from data generation
         if (network == null) {
             network = new Network(hiddenLayers, inputCount, isRadialBasis, data.getExamples() );

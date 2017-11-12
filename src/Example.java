@@ -9,8 +9,7 @@ import java.util.Scanner;
 public class Example {
 
     public List<Double> inputs = new ArrayList<>();
-    public List<Integer> outputs = new ArrayList<>();
-
+    public List<Double> outputs = new ArrayList<>();
     public String classOutput;
 
     public Example() {}
@@ -19,7 +18,7 @@ public class Example {
         this.inputs = inputs;
     }
 
-    public Example(List<Double> inputs, List<Integer> outputs) {
+    public Example(List<Double> inputs, List<Double> outputs) {
         this.inputs = inputs;
         this.outputs = outputs;
     }

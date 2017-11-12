@@ -13,9 +13,7 @@ public class ReadData {
     public List<Example> getExamples(){
         return dataIn;
     }
-
     public static void main(String[] args) throws IOException {
-
         // open file input stream
         BufferedReader reader = new BufferedReader(new FileReader(
                 "res/abalone.data"));
@@ -30,7 +28,7 @@ public class ReadData {
             scanner.useDelimiter(",");
             while (scanner.hasNextLine()) {
                 for (int i = 0; i < 8; i++ ){
-                    data.outputs.add(0);
+                    data.outputs.add(0d);
                 }
                 while (scanner.hasNext()) {
                     String d = scanner.next();
@@ -41,7 +39,7 @@ public class ReadData {
                         }
                         //comparing class value to index of classIndex, set to 1
                         int pos = classList.indexOf(d);
-                        data.outputs.set(pos, 1);
+                        data.outputs.set(pos, 1d);
                         break;
                     } else ;
                     data.inputs.add(Double.parseDouble(d));
@@ -53,8 +51,8 @@ public class ReadData {
         }
         //close reader
         reader.close();
+        scanner.close();
     }
-
 }
 
 
