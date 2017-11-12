@@ -54,8 +54,3 @@ public class ReadData {
         scanner.close();
     }
 }
-
-
-
-
-
