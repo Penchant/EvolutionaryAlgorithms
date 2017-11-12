@@ -262,7 +262,7 @@ public class Network implements Runnable {
         // Updating weights on output layer
         for (int i = 0; i < outputNodes.size(); i++) {
             Node outputNode = outputNodes.get(i);
-            outputNode.delta = -1 * (target.get(i) - outputNode.output);
+            outputNode.delta = -1 * (target.get(i) - outputNode.output) * outputNode.output * (1 - outputNode.output);
 
             for (int j = 0; j < outputNode.newWeights.size(); j++) {
                 double weightChange = outputNode.delta * previousLayer.nodes.get(j).output;
@@ -384,30 +384,6 @@ public class Network implements Runnable {
         }
     }
 
-    /**
-     * Calculates the Rosenbrock function from the given input
-     * f(x) = f(x1, x1, ..., xn) = Sum over all elements of [(1-x_i)^2 + 100(x_(i+1) - (x_i)^2)^2]
-     *
-     * @param values Input values for the function of any dimension
-     * @return The result of applying to Rosenbrock function to the given input
-     */
-    public static double rosenbrock(double... values) {
-        return IntStream.range(0, values.length - 1)
-                .boxed()
-                .parallel()
-                .map(i -> new Double[]{values[i], values[i + 1]})
-                .mapToDouble(rosenbrock2D)
-                .sum();
-    }
-
-    /**
-     * Calculates the Rosenbrock function from the given 2D input
-     * f(x) = f(x, y) = [(1-x)^2 + 100(y - x^2)^2]
-     *
-     * @param values 2D input values for the function
-     * @return The result of applying to Rosenbrock function to the given input
-     */
-    private static ToDoubleFunction<Double[]> rosenbrock2D = values -> Math.pow(Math.pow(1 - values[0], 2) + 100 * (values[1] - Math.pow(values[0], 2)), 2);
 
     /**
      * Calculates total error from Rosenbrock inputs and output from nodes
