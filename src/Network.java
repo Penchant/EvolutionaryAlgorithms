@@ -32,6 +32,46 @@ public class Network implements Runnable {
      */
     public Network(){}
 
+    /**
+     * Creates network from chromosome
+     * @param chromosome chromosome to create network from
+     */
+    public Network(Chromosome chromosome){
+        int numCols = chromosome.adjacencyMatrix[0].length;
+        int numRows = chromosome.adjacencyMatrix.length;
+        int priorLayerNode = -1;
+        Network net = new Network();
+        Layer inputLayer = new Layer(Type.INPUT);
+
+        List inputLayerIndices = IntStream.
+                range(0, numCols).
+                parallel().
+                filter((j) ->IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] != 0)).
+                mapToObj(obj -> obj).
+                collect(Collectors.toList());
+
+        // Adding nodes to layers must be done sequentially because the order is assumed to be maintained
+        // so to allow getting the indices to be done in parallel, list is collected and then nodes are added
+        inputLayerIndices.stream().
+                forEach(index -> chromosome.addNodeToLayer((Integer) index, inputLayer));
+
+        net.layers.add(inputLayer);
+        boolean isOutputLayer = true;
+
+        while(!isOutputLayer){
+            List<Integer> nextLayerIndices = chromosome.getNextLayerIndices(priorLayerNode);
+
+            //Update priorLayerNode
+            priorLayerNode = nextLayerIndices.get(0);
+            isOutputLayer = chromosome.getNextLayerIndices(priorLayerNode).isEmpty();
+
+            Layer newLayer = new Layer(0, isOutputLayer ? Type.OUTPUT : Type.HIDDEN);
+            nextLayerIndices.stream().parallel().forEach((index) -> chromosome.addNodeToLayer(index, newLayer));
+        }
+
+        net.setNodeConnections();
+    }
+
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {
         if (hiddenLayers.get(0)== 0){
             this.hiddenLayers = 0;
@@ -310,31 +350,7 @@ public class Network implements Runnable {
      * @return Returns the network represented as chromosome
      */
     public Chromosome toChromosome() {
-        List<List<Node>> multiNodes = new ArrayList<>();
-        for(Layer layer : this.layers){
-            multiNodes.add(layer.nodes);
-        }
-        List<Node> nodes = multiNodes.
-                parallelStream().
-                flatMap(Collection::stream).
-                collect(Collectors.toList());
-        IntStream.
-                range(0,nodes.size()).
-                parallel().
-                forEach(index -> nodes.get(index).id = index);
-        double[][] adjacencyMatrix = new double[nodes.size()][nodes.size()];
-        nodes.
-                stream().
-                parallel().
-                forEach(
-                        (j) ->
-                            IntStream.
-                                    range(0, j.inputNodes.size()).
-                                    parallel().
-                                    forEach( index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
-                );
-
-        return new Chromosome(adjacencyMatrix);
+        return new Chromosome(this);
     }
 
     /**
