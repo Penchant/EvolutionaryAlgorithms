@@ -38,9 +38,11 @@ public class Main extends Application {
     public static void start(double dataGenStart, double dataGenEnd, double dataGenIncrement, List<Integer> hiddenLayers, int inputCount, boolean isRadialBasis) {
         System.out.println("Starting");
 
+        ReadData data = new ReadData();
+
         // Create network with examples from data generation
         if (network == null) {
-            network = new Network(hiddenLayers, inputCount, isRadialBasis, generateData(dataGenStart, dataGenEnd, dataGenIncrement, inputCount, Network::rosenbrock));
+            network = new Network(hiddenLayers, inputCount, isRadialBasis, data.getExamples() );
         }
 
         System.out.println("Created network");
@@ -74,79 +76,6 @@ public class Main extends Application {
 
             timer.start();
         }
-    }
-
-    /**
-     * Generates examples of given function
-     *
-     * @param dataGenStart          Start of range for data
-     * @param dataGenEnd            End of range for data
-     * @param dataGenIncrement      How much to increment between each data point
-     * @param dimension             How many dimensions to generate data in
-     * @param functionToApproximate Function to generate outputs from
-     * @return List of examples of given function in given number of dimensions through range given, with given increment
-     */
-    private static List<Example> generateData(double dataGenStart, double dataGenEnd, double dataGenIncrement, int dimension, Function<double[], Double> functionToApproximate) {
-        System.out.println("Starting data generation");
-        List<Example> examples = new ArrayList<Example>();
-        double range = Math.abs(dataGenEnd - dataGenStart);
-        int numExamples = (int) Math.pow((range / dataGenIncrement), (double) dimension);
-
-        // Create List with appropriate number of examples
-        for (int i = 0; i < numExamples; i++) {
-            examples.add(new Example());
-        }
-
-        // Initialize for lists to have space for inputs
-        examples.parallelStream().forEach(example -> {
-            for (int i = 0; i < dimension; i++) {
-                example.inputs.add(0d);
-            }
-        });
-
-        // Create point counter and initialize
-        List<Double> point = new ArrayList<Double>();
-        for (int i = 0; i < dimension; i++) {
-            point.add(dataGenStart);
-        }
-
-        System.out.println("Starting to count");
-        for (int i = 0; i < numExamples; i++) {
-
-            // Move data from point to separate list to not modify dimensions of point
-            List<Double> calculatedPoint = new ArrayList<Double>();
-            for (int j = 0; j < dimension; j++) {
-                calculatedPoint.add(point.get(j));
-            }
-
-            // Calculate output and add to end of list
-            double[] inputs = calculatedPoint.stream().mapToDouble(Double::doubleValue).toArray();
-            Double functionOutput = functionToApproximate.apply(inputs);
-
-
-            List<Double> outputs = new ArrayList<>();
-            outputs.add(functionOutput);
-            Example ex = new Example(calculatedPoint, outputs);
-
-            examples.set(i, ex); // Add calculated point as example
-            boolean carry = true; // Carry flag for arithmetic ahead
-
-            for (int k = dimension - 1; k >= 0; k--) {
-                if (carry) {
-                    // If over dataGenEnd, carry flag stays set and current dimension is set to dataGenStart
-                    if (point.get(k) + dataGenIncrement > dataGenEnd)
-                        point.set(k, dataGenStart);
-                    else {
-                        point.set(k, point.get(k) + dataGenIncrement);
-                        carry = false;
-                    }
-                }
-            }
-        }
-
-        System.out.println("Finishing data generation");
-
-        return examples;
     }
 
     public static void load() {

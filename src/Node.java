@@ -27,7 +27,7 @@ public class Node {
             if (nodeType == Type.INPUT) {
                 weights.add(1d);
             } else if (nodeType == Type.OUTPUT){
-                weights.add(Math.random() * 10000);
+                weights.add(Math.random());
             } else {
                 weights.add(Math.random());
             }
@@ -43,7 +43,7 @@ public class Node {
             case HIDDEN:    activationFunction = logisticActivation; break;
             case RBFHIDDEN: activationFunction = gaussianBasisFunction; break;
             case INPUT:
-            case OUTPUT:
+            case OUTPUT:    activationFunction = logisticActivation; break;
             case RBFINPUT:
             default:        activationFunction = linearActivation; break;
         }
