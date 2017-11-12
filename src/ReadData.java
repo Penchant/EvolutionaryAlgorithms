@@ -15,8 +15,7 @@ public class ReadData {
     }
     public static void main(String[] args) throws IOException {
         // open file input stream
-        BufferedReader reader = new BufferedReader(new FileReader(
-                "res/abalone.data"));
+        BufferedReader reader = new BufferedReader(new FileReader("res/abalone.data"));
 
         // read file line by line
         String line = null;
