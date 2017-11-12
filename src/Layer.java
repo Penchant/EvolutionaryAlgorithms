@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -11,6 +12,11 @@ public class Layer {
     public Type layerType;
     public int id;
 
+    /**
+     * Creates a layer of a given type with a specified number of nodes
+     * @param nodeCount number of nodes initially in layer
+     * @param layerType type of layer
+     */
     public Layer(int nodeCount, Type layerType) {
         this.layerType = layerType;
         this.id = count++;
@@ -22,6 +28,19 @@ public class Layer {
                 .parallel()
                 .map(i -> new Node(layerType, inputCount))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Create layer with layerType and initially no nodes
+     * @param layerType the type of layer to be made
+     */
+    public Layer(Type layerType){
+        this(0, layerType);
+        nodes = new ArrayList<>();
+    }
+
+    public boolean add(Node newNode){
+        return nodes.add(newNode);
     }
 
     public void updateNodeWeights() {

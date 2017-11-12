@@ -5,13 +5,11 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class Network implements Runnable {
@@ -27,8 +25,12 @@ public class Network implements Runnable {
     private int hiddenLayers;
     private int dimension;
 
-    public static double learningRate = .000001d;
+    public static double learningRate = .0001d;
 
+    /**
+     * Blank constructor for Chromosome.ToNetwork()
+     */
+    public Network(){}
 
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {
         if (hiddenLayers.get(0)== 0){
@@ -69,6 +71,7 @@ public class Network implements Runnable {
         }
 
         layers.add(new Layer(examples.get(0).outputs.size(), Type.OUTPUT));
+        setNodeConnections();
     }
 
     public void setupExamples () {
@@ -123,9 +126,11 @@ public class Network implements Runnable {
 
                 // For each example we set the input layer's node's inputs to the example value,
                 // then calculate the output for that example.
-                examples.forEach(example -> {
+                examples.stream().forEach(example -> {
                     Double networkOutput = forwardPropagate(example);
                     output.add(networkOutput);
+
+                    //System.out.println(networkOutput);
 
                     if (Double.isNaN(networkOutput)) {
                         System.err.println("NaN");
@@ -137,6 +142,16 @@ public class Network implements Runnable {
 
                 layers.parallelStream().forEach(Layer::updateNodeWeights);
 
+                double mean = output.parallelStream().mapToDouble(d -> d).sum();
+
+                double standardDeviation = output.
+                        parallelStream().
+                        mapToDouble(d -> (d - mean)*(d - mean)).
+                        sum()
+                        /(output.size() - 1);
+                standardDeviation = Math.sqrt(standardDeviation);
+
+                System.out.println("Mean is " + mean + " and standard deviation is " + standardDeviation);
 
                 List<Double> outputs = examples
                         .stream()
@@ -210,9 +225,9 @@ public class Network implements Runnable {
         Layer input = layers.get(0);
 
         // For each node in the input layer, set the input to the node
-        input.nodes.parallelStream().forEach(node -> {
-            node.inputs.clear();
-            node.inputs.addAll(example.inputs);
+        IntStream.range(0, example.inputs.size()).parallel().forEach(index -> {
+            input.nodes.get(index).inputs.clear();
+            input.nodes.get(index).inputs.add(example.inputs.get(index));
         });
 
         // Calculate the output for each layer and pass it into the next layer
@@ -290,7 +305,51 @@ public class Network implements Runnable {
         }
     }
 
-    public List<Double> calculateError() {return null;}
+    /**
+     * Converts the network to a chromosome
+     * @return Returns the network represented as chromosome
+     */
+    public Chromosome toChromosome() {
+        List<List<Node>> multiNodes = new ArrayList<>();
+        for(Layer layer : this.layers){
+            multiNodes.add(layer.nodes);
+        }
+        List<Node> nodes = multiNodes.
+                parallelStream().
+                flatMap(Collection::stream).
+                collect(Collectors.toList());
+        IntStream.
+                range(0,nodes.size()).
+                parallel().
+                forEach(index -> nodes.get(index).id = index);
+        double[][] adjacencyMatrix = new double[nodes.size()][nodes.size()];
+        nodes.
+                stream().
+                parallel().
+                forEach(
+                        (j) ->
+                            IntStream.
+                                    range(0, j.inputNodes.size()).
+                                    parallel().
+                                    forEach( index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
+                );
+
+        return new Chromosome(adjacencyMatrix);
+    }
+
+    /**
+     * Sets the inputNodes on all nodes
+     */
+    public void setNodeConnections(){
+        IntStream.range(1, layers.size()).parallel().forEach(
+                index -> {
+                    Layer currentLayer = layers.get(index);
+                    currentLayer.nodes.stream().parallel().forEach(
+                            node -> node.inputNodes.addAll(layers.get(index - 1).nodes)
+                    );
+                }
+        );
+    }
 
     private double calculateSigma() {
         double maxDistance = 0;
@@ -314,6 +373,15 @@ public class Network implements Runnable {
         }
 
         return Math.sqrt(maxDistance);
+    }
+
+    class Tuple{
+        public Node node;
+        public int id;
+        public Tuple(Node node, int id){
+            this.node = node;
+            this.id = id;
+        }
     }
 
     /**

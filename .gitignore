@@ -22,3 +22,5 @@
 hs_err_pid*
 *.idea/*
 *[B|b]in
+*[O|o]ut
+*.csv

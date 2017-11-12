@@ -14,9 +14,14 @@ public class Node {
     public List<Double> weights = new ArrayList<>();
     public List<Double> newWeights = new ArrayList<>();
 
+
+    public final Function<Double, Double> activationFunction;
+
     public double output;
     public double mu = 0;
     public double delta;
+    public int id;
+    public List<Node> inputNodes;
 
     private Type nodeType;
 
@@ -33,11 +38,21 @@ public class Node {
             }
         }
 
+        switch (nodeType) {
+            case HIDDEN:    activationFunction = logisticActivation; break;
+            case RBFHIDDEN: activationFunction = gaussianBasisFunction; break;
+            case INPUT:
+            case OUTPUT:
+            case RBFINPUT:
+            default:        activationFunction = linearActivation; break;
+        }
+
         newWeights.addAll(weights);
     }
 
-    public double calculateOutput() {
-        final Function<Double, Double> activationFunction;
+    public Node(Type nodeType, List<Double> weights){
+        this.nodeType = nodeType;
+        this.weights = weights;
 
         switch (nodeType) {
             case HIDDEN:    activationFunction = logisticActivation; break;
@@ -47,6 +62,11 @@ public class Node {
             case RBFINPUT:
             default:        activationFunction = linearActivation; break;
         }
+
+        newWeights.addAll(weights);
+    }
+
+    public double calculateOutput() {
 
         return output = activationFunction.apply(
                 IntStream.range(0, inputs.size())
@@ -80,7 +100,7 @@ public class Node {
      * Logistic Activation Function
      * Returns the input mapped to a sigmoidal curve
      */
-    private Function<Double, Double> logisticActivation = value -> 1d / (1 + Math.pow(Math.E, -value));
+    private Function<Double, Double> logisticActivation = value -> 1 / (1 + Math.exp(-1 * value));
 
     @Override
     public String toString() {
