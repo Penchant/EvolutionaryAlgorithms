@@ -2,8 +2,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class Evolution {
@@ -11,9 +9,9 @@ public class Evolution {
     double minRange = -0.1;
     double maxRange = 0.1;
     int mutationChance = 1000;
-	int anealFactor = 5;
-	double epochMultiplier = 0.9;
-	double esUpdateParam = 0.5;
+    int anealFactor = 5;
+    double epochMultiplier = 0.9;
+    double esUpdateParam = 0.5;
     List<Chromosome> population;
     public int numParents = 2;
     static Random random = new Random();
@@ -66,17 +64,17 @@ public class Evolution {
 
     /**
     * Mutation
-	* @param child, evoStrat - Chromosomes. child will be mutated. evoStrat can
-	* 	be null. If not it is used in the mutation.
-	*	epoch - this is the number of generations the child is since the first.
-	* @return returns the mutated child Chromosome
+    * @param child, evoStrat - Chromosomes. child will be mutated. evoStrat can
+    * be null. If not it is used in the mutation.
+    * @param epoch - this is the number of generations the child is since the first.
+    * @return returns the mutated child Chromosome
     * will mutate a chromosome. it goes through each element in the chromosome
     * and when a random numer pull (0, mutationChance] is equal 0 it will mutate that element.
     *
     * The mutation algorithm depends on whether it is doing creep or evolution strategy
     * based on wether the evoStrat is null or not.
-	*
-	* epoch is used to aneal the non evoStrat algorithms
+    *
+    * epoch is used to aneal the non evoStrat algorithms
     */
     public Chromosome mutation (Chromosome child, Chromosome evoStrat, int epoch) {
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
@@ -84,11 +82,11 @@ public class Evolution {
                 int randomNum = (int)(Math.random() * mutationChance);
                 if (randomNum == 0) {
                     if (evoStrat == null) {
-						double creep = randomInRange(minRange, maxRange);
-						if (epoch != 0)	{
-							double aneal = (anealFactor * 1/(anealMultiplier * epoch) + 1);
-							creep = aneal * creep;							
-						}
+                        double creep = randomInRange(minRange, maxRange);
+                        if (epoch != 0)	{
+                            double aneal = (anealFactor * 1 / (epochMultiplier * epoch) + 1);
+                            creep = aneal * creep;
+                        }
                         child.adjacencyMatrix[i][j] = child.adjacencyMatrix[i][j] + creep;
                     }
                     else {
@@ -101,12 +99,12 @@ public class Evolution {
         return child;
     }
 
-	/**
-	* randomInRange
-	* $param min and max - doubles that define the range of the desired
-	* 	random number
-	* $return random number in the given range
-	*/
+    /**
+    * randomInRange
+    * @param min and max - doubles that define the range of the desired
+    * random number
+    * @return random number in the given range
+    */
     private static double randomInRange(double min, double max) {
         double range = max - min;
         double scaled = random.nextDouble() * range;
@@ -114,33 +112,35 @@ public class Evolution {
         return shifted; // == (rand.nextDouble() * (max-min)) + min;
     }
 
-	/**
-	* updateEvoStrat
-	* @param evoStrat - Chromosome defining the evolution strategy parameters
-	* 	used for mutation in the Evolution Strategy algorithm.
-	* $return returns the updated evoStrat Chromosome
-	*/
-	public Chromosome updateEvoStrat (Chromosome evoStrat) {
-		for (int i = 0; i < evoStrat.adjacencyMatrix.length; i++) {
-			for (int j = i + 1; j < evoStrat.adjacencyMatrix[i].length; j++) {
-				evoStrat.adjacencyMatrix [i][j] = evoStrat.adjacencyMatrix[i][j] +
-					esUpdateParam * evoStrat.adjacencyMatrix[i][j] * normalDeviation ();
-			}
-		}
-		return evoStrat;
-	}
-	
-	/**
-	* normalDeviation
-	* @return returns a random double that fits in a normal distribution
-	* 	around 0.5 between 0 and 1. 
-	*/
-	private double normalDeviation () {
-		double x = (random.nextGaussian () + 4) / 8;
-		if (x > 1)
-			x = 1;
-		if (x < 0)
-			x = 0;
-		return x;
-	}
+    /**
+    * updateEvoStrat
+    * @param evoStrat - Chromosome defining the evolution strategy parameters
+    * used for mutation in the Evolution Strategy algorithm.
+    * @return returns the updated evoStrat Chromosome
+    */
+    public Chromosome updateEvoStrat (Chromosome evoStrat) {
+        for (int i = 0; i < evoStrat.adjacencyMatrix.length; i++) {
+            for (int j = i + 1; j < evoStrat.adjacencyMatrix[i].length; j++) {
+                evoStrat.adjacencyMatrix [i][j] = evoStrat.adjacencyMatrix[i][j] +
+                    esUpdateParam * evoStrat.adjacencyMatrix[i][j] * normalDeviation ();
+            }
+        }
+        return evoStrat;
+    }
+
+    /**
+    * normalDeviation
+    * @return returns a random double that fits in a normal distribution
+    * 	around 0.5 between 0 and 1.
+    */
+    private double normalDeviation () {
+        double x = (random.nextGaussian () + 4) / 8;
+        if (x > 1) {
+            x = 1;
+        }
+        if (x < 0) {
+            x = 0;
+        }
+        return x;
+    }
 }
