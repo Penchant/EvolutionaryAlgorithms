@@ -22,6 +22,7 @@ public class Evolution implements Runnable {
     public int numOfChildren;
     public Algorithm algorithm;
     static Random random = new Random();
+    Chromosome bestChromosome;
 
     public enum Algorithm {
         GA, ES, DE, BP
@@ -105,7 +106,7 @@ public class Evolution implements Runnable {
      * @return The parents to crossover
      */
     private List<Chromosome> selectParents() {
-        System.out.println("Selecting Parents");
+//        System.out.println("Selecting Parents");
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
@@ -163,7 +164,7 @@ public class Evolution implements Runnable {
      * Selects new population based on top fitness (percent correct)
      */
     public List<Chromosome> selectNewPopulation(List<Chromosome> population) {
-        System.out.println("Selecting New Population");
+//        System.out.println("Selecting New Population");
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
@@ -172,6 +173,11 @@ public class Evolution implements Runnable {
 
         Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
         sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
+
+        bestChromosome = sortedPop.get(populationSize);
+
+        System.out.println("Percent Correct of best chromosome: " + bestChromosome.percentCorrect*100 + "%");
+
         return sortedPop;
     }
 
@@ -272,7 +278,7 @@ public class Evolution implements Runnable {
     * epoch is used to anneal the non evoStrat algorithms
     */
     public Chromosome mutation(Chromosome child, Chromosome evoStrategy, int epoch) {
-        System.out.println("Mutating");
+//        System.out.println("Mutating");
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
                 if (Math.random() < mutationChance) {
