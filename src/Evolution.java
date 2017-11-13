@@ -19,12 +19,13 @@ public class Evolution {
 
     /**
      * Constructor for Chromosomes
-     * @param hiddenLayers
-     * @param dimension
-     * @param outputDimension
-     * @param populationSize
+     * @param hiddenLayers List containing number of nodes per layer
+     * @param dimension Number of input nodes
+     * @param outputDimension Number of output nodes
+     * @param populationSize Number of individuals to have in population
+     * @param numOfChildren Number of children
      */
-    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize){
+    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren){
 
     }
 
@@ -47,6 +48,9 @@ public class Evolution {
         return parents;
     }
 
+    /**
+     * Selects new population based on top fitness (percent correct)
+     */
     public  void selectNewPopulation() {
     	List<Chromosome> sortedPop = new ArrayList<>();
 
