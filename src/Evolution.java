@@ -54,11 +54,12 @@ public class Evolution {
     /**
      * Selects new population based on top fitness (percent correct)
      */
-    public  void selectNewPopulation() {
+    public void selectNewPopulation() {
         List<Chromosome> sortedPop = new ArrayList<>();
 
-    	for (int i = 0; i<population.size(); i++)
-    	    sortedPop.add(i, population.get(i));
+    	for (int i = 0; i < population.size(); i++) {
+            sortedPop.add(i, population.get(i));
+        }
 
     	Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
     	sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
