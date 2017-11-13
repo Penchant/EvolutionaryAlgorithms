@@ -11,13 +11,15 @@ For help with the command line parameters, use `java -jar Rosenbrock.jar -h`
 |--------|--------------------------------------------------------------|:-------:|:---------:|
 | -nogui | Runs the application without a GUI                           | true    | Void      |
 | -h     | Displays the help text                                       |         | Void      |
-| -rb    | Sets the network to use radial basis                         | false   | Void      |
-| -ds    | The start point for the data (example) generation            | 0.000   | Double    |
-| -de    | The end point for the data (example) generation              | 20.000  | Double    |
-| -di    | The incrementation of the data point                         | 0.100   | Double    |
-| -hl    | The amount of hidden layers, and the amount of nodes in each | 200,100 | String    |
-| -d     | The number of dimensions the function will use               | 2       | Integer   |
+| -hl    | The amount of hidden layers, and the amount of nodes in each | 40,40   | String    |
 | -s     | Save the weights to a given output file                      |         | String    |
+| -p     | Population size                                              | 10      | Integer   |
+| -o     | Offspring count                                              | 10      | Integer   |
+| -lr    | Learning Rate                                                | 0.010   | Double    |
+| -a     | Algorithm (bp, ga, ds, de)                                   | ga      | String    |
+| -f     | Data File                                                    | iris.data | String    |
+| -m     | Mutation Rate                                                | 0.050   | Double    |
+| -b     | Beta Rate                                                    | 0.100   | Double    |
 
 
 Example:
