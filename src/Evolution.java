@@ -64,15 +64,16 @@ public class Evolution implements Runnable {
 
     private void geneticAlgorithm() {
     }
-    private void evolutionStrategies(){
+    
+    private void evolutionStrategies() {
 
     }
 
-    private void differentialEvolution(){
+    private void differentialEvolution() {
 
     }
 
-    private void backpropagation(){
+    private void backpropagation() {
 
     }
 
