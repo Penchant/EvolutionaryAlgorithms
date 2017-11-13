@@ -1,6 +1,6 @@
 public class Logger {
 
-    static Level messageLevel = Level.always;
+    static Level messageLevel = Level.shout;
 
     enum Level {
         always,
