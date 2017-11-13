@@ -38,7 +38,7 @@ public class Main extends Application {
     private static int direction = 1;
 
     public static void start(String algorithm, List<Integer> hiddenLayers, int populationSize, int numOfChildren) {
-        System.out.println("Starting");
+        Logger.log("Starting");
 
         ReadData.load(dataFilePath);
         List<Example> examples = ReadData.getExamples();
@@ -57,9 +57,9 @@ public class Main extends Application {
 
         Evolution evolution = new Evolution(chosenAlgorithm, hiddenLayers, examples, populationSize, numOfChildren);
 
-        System.out.println("Created evolution network");
+        Logger.log("Created evolution network");
 
-        System.out.println("Starting to run evolution network");
+        Logger.log("Starting to run evolution network");
 
 
         evolution.run();
