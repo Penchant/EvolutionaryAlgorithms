@@ -6,7 +6,6 @@ Running without any parameters will open the GUI.  If you would rather use the c
 
 For help with the command line parameters, use `java -jar evolution.jar -h`
 
-
 | Flag   | Description                                                  | Default   | Parameter |
 |--------|--------------------------------------------------------------|:---------:|:---------:|
 | -a     | Algorithm (bp, ga, ds, de)                                   | ga        | String    |
@@ -18,7 +17,6 @@ For help with the command line parameters, use `java -jar evolution.jar -h`
 | -m     | Mutation Rate                                                | 0.050     | Double    |
 | -o     | Offspring count                                              | 10        | Integer   |
 | -p     | Population size                                              | 10        | Integer   |
-| -s     | Save the weights to a given output file                      |           | String    |
 
 Example:
 ```java

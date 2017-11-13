@@ -11,9 +11,7 @@ public class Main {
     public static String algorithm;
     public static String dataFilePath;
 
-    private static Network network;
     public static boolean shouldPause = false;
-    private static String savePath;
 
     public static void start(String algorithm, List<Integer> hiddenLayers, int populationSize, int numOfChildren) {
         Logger.log("Starting");
@@ -81,7 +79,6 @@ public class Main {
             new CommandLineParameter("-m",     "Mutation Rate",                                                d -> Evolution.mutationChance = (double) d,.05, CommandLineParameter.Type.Double),   // Mutation Rate
             new CommandLineParameter("-o",     "Offspring count",                                              i -> offspringCount = (int) i,            10,   CommandLineParameter.Type.Integer),  // Offspring Count
             new CommandLineParameter("-p",     "Population size",                                              i -> populationSize = (int) i,            10,   CommandLineParameter.Type.Integer),  // Population Size
-            new CommandLineParameter("-s",     "Save the weights to a given output file",                      s -> savePath = (String) s,               "",   CommandLineParameter.Type.String),   // Save
     };
 
     public static void main(String[] args) {
@@ -111,7 +108,6 @@ public class Main {
         }
 
         start(algorithm, hiddenLayers, populationSize, offspringCount);
-        System.exit(0);
     }
 
     /**
