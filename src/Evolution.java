@@ -68,7 +68,7 @@ public class Evolution {
     * @return returns a list of parents. One is a weighted random individual based
     * on rank. The other three are random individuals that must be mutually exclusive.
     */
-    private List<Chromosome> selectESParents () {
+    private List<Chromosome> selectESParents() {
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
@@ -77,7 +77,7 @@ public class Evolution {
 
         List<Integer> parentIndexes = new ArrayList<>();
 
-        //Create one parent
+        // Create one parent
         IntStream.range(0, 1).parallel().forEach((index) -> parentIndexes.add(chooseParentIndexes(ranges)));
         int x1 = 0, x2 = 0, x3 = 0, x;
         x = parentIndexes.get (0);
