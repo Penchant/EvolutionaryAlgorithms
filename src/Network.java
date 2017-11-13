@@ -112,6 +112,30 @@ public class Network implements Runnable {
         setNodeConnections();
     }
 
+    /**
+     * Constructor for Network
+     * @param hiddenLayers List containing number of nodes per layer
+     * @param dimension Number of input nodes
+     * @param outputDimension Number of output nodes
+     * @param populationSize Number of individuals to have in population
+     * @param numOfChildren Number of children
+     */
+    public Network(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren) {
+        if (hiddenLayers.get(0) == 0){
+            this.hiddenLayers = 0;
+        } else {
+            this.hiddenLayers = hiddenLayers.size();
+        }
+        this.dimension = dimension;
+
+        Layer.network = this;
+
+        layers.add(inputLayer = new Layer(dimension, Type.INPUT));
+
+        layers.add(new Layer(outputDimension, Type.OUTPUT));
+        setNodeConnections();
+    }
+
     public void setupExamples () {
         examples = new ArrayList<Example> ();
         verifySet = new ArrayList<Example> ();
@@ -286,6 +310,10 @@ public class Network implements Runnable {
         return layers.get(layers.size() - 1).calculateNodeOutputs();
     }
 
+    /**
+     * Calculate percent correct for list of outputs for a given Chromosome
+     * @return the percentage of correctly guessed classes
+     */
     public double getPercentCorrect(){
         int numCorrect = 0;
         double temp;
@@ -323,8 +351,7 @@ public class Network implements Runnable {
 
 
     /**
-     * Use forwardProp to get output layer // TODO: ??????
-     *
+     * Uses outputs to update weights through backpropagation
      * @param target
      */
     public void backPropagate(List<Double> target) {

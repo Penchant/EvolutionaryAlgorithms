@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Evolution {
@@ -9,15 +6,30 @@ public class Evolution {
     double minRange = -0.1;
     double maxRange = 0.1;
     int mutationChance = 1000;
+
     int anealFactor = 5;
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
+    int populationSize;
+
     List<Chromosome> population;
     public int numParents = 2;
     static Random random = new Random();
 
     public enum Algorithm {
         GA, ES, DE
+    }
+
+    /**
+     * Constructor for Chromosomes
+     * @param hiddenLayers List containing number of nodes per layer
+     * @param dimension Number of input nodes
+     * @param outputDimension Number of output nodes
+     * @param populationSize Number of individuals to have in population
+     * @param numOfChildren Number of children
+     */
+    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren) {
+
     }
 
     /**
@@ -37,6 +49,20 @@ public class Evolution {
         IntStream.range(0, numParents).parallel().forEach((index) -> parents.add(chooseParent(ranges)));
 
         return parents;
+    }
+
+    /**
+     * Selects new population based on top fitness (percent correct)
+     */
+    public  void selectNewPopulation() {
+        List<Chromosome> sortedPop = new ArrayList<>();
+
+    	for (int i = 0; i<population.size(); i++)
+    	    sortedPop.add(i, population.get(i));
+
+    	Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
+    	sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
+    	population = sortedPop;
     }
 
     /**
