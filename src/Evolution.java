@@ -8,7 +8,7 @@ public class Evolution {
     static double beta;
     double minRange = -0.1;
     double maxRange = 0.1;
-    int anealFactor = 5;
+    int annealFactor = 5;
   
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
