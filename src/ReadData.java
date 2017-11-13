@@ -24,10 +24,8 @@ public class ReadData {
 
                 List<Double> inputs = new ArrayList<Double>();
 
-                List<String> classes = new ArrayList();
-
-                if (!classes.contains(data[data.length - 1])) {
-                    classes.add(data[data.length - 1]);
+                if (!classList.contains(data[data.length - 1])) {
+                    classList.add(data[data.length - 1]);
                 }
 
                 Stream.of(data).limit(data.length - 1).forEach((element) -> {
@@ -36,7 +34,7 @@ public class ReadData {
 
                 List<Double> output = new ArrayList<>();
 
-                output.add((double) classes.indexOf(data[data.length - 1]));
+                output.add((double) classList.indexOf(data[data.length - 1]));
 
                 dataIn.add(new Example(inputs, output));
             }
