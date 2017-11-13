@@ -14,16 +14,20 @@ import java.util.stream.IntStream;
 
 public class Network implements Runnable {
 
+    public double percentCorrect = -1;
     public List<Layer> layers = new ArrayList<>();
-    public List<Chromosome> chromosomes;
 
     private Layer inputLayer;
     private List<Example> examples;
     private List<Example> fullSet;
     private List<Example> verifySet;
     private List<Example> testSet;
+    private List<Chromosome> chromosomes;
+    private List<Chromosome> bestChromosomes;
+
     private int hiddenLayers;
     private int dimension;
+
 
     public static double learningRate = .0001d;
 
@@ -255,7 +259,7 @@ public class Network implements Runnable {
      *
      * @return A [List] containing the output for each example in the examples list.
      */
-    public Double forwardPropagate(Example example) {
+    public List forwardPropagate(Example example) {
         Layer input = layers.get(0);
 
         // For each node in the input layer, set the input to the node
@@ -280,8 +284,43 @@ public class Network implements Runnable {
         }
 
         // We have hit the output and need to save it - Assume output has only one node.
-        return layers.get(layers.size() - 1).calculateNodeOutputs().get(0);
+        return layers.get(layers.size() - 1).calculateNodeOutputs();
     }
+
+    public double getPercentCorrect(){
+        int numCorrect = 0;
+        double temp;
+        double max = 0;
+
+        if(percentCorrect >=0)
+            return percentCorrect;
+
+            List<List<Double>> outputs = new ArrayList<>();
+            // For each example we set the input layer's node's inputs to the example value,
+            // then calculate the output for that example.
+            examples.forEach(example -> {
+                List<Double> networkOutput = forwardPropagate(example);
+                outputs.add(networkOutput);
+            });
+            //Setting greatest probability to 1, rest to zero of outputs
+            for (int i = 0; i < outputs.size(); i++) {
+                for (int j = 0; j < outputs.get(i).size(); i++) {
+                    temp = outputs.get(i).get(j);
+                    if(temp > max){
+                        max = temp;
+                        outputs.get(i).set(j, 1d);
+                        if(examples.get(i).outputs.get(j) == 1){
+                            numCorrect++;
+                        }
+                    }else;
+                    outputs.get(i).set(j, 0d);
+                }
+            }
+            percentCorrect =  numCorrect / testSet.size();
+
+        return percentCorrect;
+    }
+
 
     /**
      * Use forwardProp to get output layer // TODO: ??????
