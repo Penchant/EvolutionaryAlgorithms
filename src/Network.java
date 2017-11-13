@@ -117,10 +117,8 @@ public class Network implements Runnable {
      * @param hiddenLayers List containing number of nodes per layer
      * @param dimension Number of input nodes
      * @param outputDimension Number of output nodes
-     * @param populationSize Number of individuals to have in population
-     * @param numOfChildren Number of children
      */
-    public Network(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren) {
+    public Network(final List<Integer> hiddenLayers, int dimension, int outputDimension) {
         if (hiddenLayers.get(0) == 0){
             this.hiddenLayers = 0;
         } else {
