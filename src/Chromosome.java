@@ -29,13 +29,11 @@ public class Chromosome {
                 .forEach(index -> nodes.get(index).id = index);
 
         double[][] adjacencyMatrix = new double[nodes.size()][nodes.size()];
-        nodes.stream().parallel().forEach(
-                (j) ->
-                        IntStream
-                                .range(0, j.inputNodes.size())
-                                .parallel()
-                                .forEach( index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
-                );
+        nodes.stream().parallel().forEach((j) -> IntStream
+                        .range(0, j.inputNodes.size())
+                        .parallel()
+                        .forEach( index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
+        );
 
         this.adjacencyMatrix = adjacencyMatrix;
     }
@@ -44,7 +42,7 @@ public class Chromosome {
      * Converts a Chromosome to a network
      * @return Network made based off the chromosome
      */
-    public Network toNetwork(){
+    public Network toNetwork() {
         return new Network(this);
     }
 
