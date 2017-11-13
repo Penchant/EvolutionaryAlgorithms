@@ -268,7 +268,6 @@ public class Network implements Runnable {
     }
 
     /**
-     * TODO: write a description of forward propagation
      * Used for batch updates, where all examples will have their outputs calculated
      *
      * @return A [List] containing the output for each example in the examples list.

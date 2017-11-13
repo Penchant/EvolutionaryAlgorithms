@@ -21,6 +21,7 @@ public class Evolution implements Runnable {
     public int numParents = 2;
     public int numOfChildren;
     public Algorithm algorithm;
+    public List<Example> examples;
     static Random random = new Random();
     Chromosome bestChromosome;
 
@@ -42,6 +43,7 @@ public class Evolution implements Runnable {
                 .map(network -> network.toChromosome())
                 .collect(Collectors.toList());
 
+        this.examples = examples;
         this.numOfChildren = numOfChildren;
         this.algorithm = algorithm;
     }
@@ -77,11 +79,22 @@ public class Evolution implements Runnable {
 
     private void evolutionStrategies() {
 
-        //IntStream.range(0, numOfChildren).parallel().mapToObj(i -> )
+        IntStream.range(0, numOfChildren).parallel()
+                .mapToObj(i -> crossover(this.selectParents()))
+                .peek(child -> this.mutation(child, null, epoch))
+                .forEach(child -> this.population.add(child));
+        this.population = this.selectNewPopulation(this.population);
     }
 
     private void differentialEvolution() {
+        this.numParents = 1;
+        this.populationSize = 1;
 
+        this.population = IntStream.range(0, numOfChildren)
+                .mapToObj(i -> this.crossoverES(this.selectESParents()))
+                .map(list -> this.selectNewPopulation(list))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     private void backpropagation() {
@@ -106,7 +119,7 @@ public class Evolution implements Runnable {
      * @return The parents to crossover
      */
     private List<Chromosome> selectParents() {
-//        System.out.println("Selecting Parents");
+        Logger.log("Selecting Parents", Logger.Level.shout);
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
@@ -131,7 +144,7 @@ public class Evolution implements Runnable {
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
         ranges.add(1);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index - 1) + index + 1));
 
         List<Integer> parentIndexes = new ArrayList<>();
 
@@ -164,11 +177,11 @@ public class Evolution implements Runnable {
      * Selects new population based on top fitness (percent correct)
      */
     public List<Chromosome> selectNewPopulation(List<Chromosome> population) {
-//        System.out.println("Selecting New Population");
+        Logger.log("Selecting New Population", Logger.Level.shout);
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
-            population.get(i).percentCorrect = population.get(i).toNetwork().getPercentCorrect();
+            population.get(i).percentCorrect = population.get(i).toNetwork(examples).getPercentCorrect();
             sortedPop.add(i, population.get(i));
         }
 
@@ -223,12 +236,14 @@ public class Evolution implements Runnable {
      */
     public Chromosome crossover(List<Chromosome> parents) {
         List<Integer> fromParent = new ArrayList();
+
         IntStream.range(0, parents.get(0).adjacencyMatrix.length).forEach((index) -> {
                 double gene = Math.random();
                 if(gene >= .5) {
-                    fromParent.add(0);
-                } else {
-                    fromParent.add(1);
+                    fromParent.add(index, 0);
+                }
+                else {
+                    fromParent.add(index, 1);
                 }
             }
         );
@@ -251,17 +266,25 @@ public class Evolution implements Runnable {
     * Creates a trial vector from three random parents and then multiplies the trial by the
     * original parent.
     */
-    public Chromosome crossoverES (List<Chromosome> parents) {
+    public List<Chromosome> crossoverES (List<Chromosome> parents) {
         Chromosome trial = new Chromosome ();
+        trial.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
         Chromosome offspring = new Chromosome ();
-        for (int i = 0; i < trial.adjacencyMatrix.length; i++) {
-            for (int j = i + 1; j < trial.adjacencyMatrix[i].length; j++) {
+        offspring.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
+
+        for (int i = 0; i < parents.get(0).adjacencyMatrix.length; i++) {
+            for (int j = i + 1; j < parents.get(0).adjacencyMatrix[i].length; j++) {
                 trial.adjacencyMatrix[i][j] = parents.get (1).adjacencyMatrix [i][j] +
                     beta * (parents.get (2).adjacencyMatrix[i][j] - parents.get (3).adjacencyMatrix[i][j]);
                 offspring.adjacencyMatrix[i][j] = parents.get (0).adjacencyMatrix[i][j] * trial.adjacencyMatrix[i][j];
             }
         }
-        return offspring;
+
+        List<Chromosome> parentNChild = new ArrayList<>();
+        parentNChild.add(parents.get(0));
+        parentNChild.add(offspring);
+
+        return parentNChild;
     }
 
     /**
@@ -279,7 +302,8 @@ public class Evolution implements Runnable {
     * epoch is used to anneal the non evoStrat algorithms
     */
     public Chromosome mutation(Chromosome child, Chromosome evoStrategy, int epoch) {
-//        System.out.println("Mutating");
+        Logger.log("Mutating", Logger.Level.shout);
+
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
                 if (Math.random() < mutationChance) {
