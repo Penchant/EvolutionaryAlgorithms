@@ -21,6 +21,7 @@ public class Evolution implements Runnable {
     public int numParents = 2;
     public int numOfChildren;
     public Algorithm algorithm;
+    public List<Example> examples;
     static Random random = new Random();
 
     public enum Algorithm {
@@ -40,6 +41,7 @@ public class Evolution implements Runnable {
                 .map(network -> network.toChromosome())
                 .collect(Collectors.toList());
 
+        this.examples = examples;
         this.numOfChildren = numOfChildren;
         this.algorithm = algorithm;
     }
@@ -83,7 +85,14 @@ public class Evolution implements Runnable {
     }
 
     private void differentialEvolution() {
-        //IntStream.range(0, numOfChildren).parallel().
+        this.numParents = 1;
+        this.populationSize = 1;
+
+        this.population = IntStream.range(0, numOfChildren)
+                .mapToObj(i -> this.crossoverES(this.selectESParents()))
+                .map(list -> this.selectNewPopulation(list))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     private void backpropagation() {
@@ -132,7 +141,7 @@ public class Evolution implements Runnable {
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
         ranges.add(1);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index - 1) + index + 1));
 
         List<Integer> parentIndexes = new ArrayList<>();
 
@@ -248,17 +257,25 @@ public class Evolution implements Runnable {
     * Creates a trial vector from three random parents and then multiplies the trial by the
     * original parent.
     */
-    public Chromosome crossoverES (List<Chromosome> parents) {
+    public List<Chromosome> crossoverES (List<Chromosome> parents) {
         Chromosome trial = new Chromosome ();
+        trial.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
         Chromosome offspring = new Chromosome ();
-        for (int i = 0; i < trial.adjacencyMatrix.length; i++) {
-            for (int j = i + 1; j < trial.adjacencyMatrix[i].length; j++) {
+        offspring.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
+
+        for (int i = 0; i < parents.get(0).adjacencyMatrix.length; i++) {
+            for (int j = i + 1; j < parents.get(0).adjacencyMatrix[i].length; j++) {
                 trial.adjacencyMatrix[i][j] = parents.get (1).adjacencyMatrix [i][j] +
                     beta * (parents.get (2).adjacencyMatrix[i][j] - parents.get (3).adjacencyMatrix[i][j]);
                 offspring.adjacencyMatrix[i][j] = parents.get (0).adjacencyMatrix[i][j] * trial.adjacencyMatrix[i][j];
             }
         }
-        return offspring;
+
+        List<Chromosome> parentNChild = new ArrayList<>();
+        parentNChild.add(parents.get(0));
+        parentNChild.add(offspring);
+
+        return parentNChild;
     }
 
     /**
