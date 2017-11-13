@@ -23,6 +23,7 @@ public class Main extends Application {
     public static int offspringCount;
     public static String algorithm;
     public static double mutationRate;
+    public static String dataFilePath;
 
     private static Stage primaryStage;
     private static GUIController controller;
@@ -39,8 +40,8 @@ public class Main extends Application {
     public static void start(String algorithm, List<Integer> hiddenLayers, int populationSize, int numOfChildren) {
         System.out.println("Starting");
 
+        ReadData.load(dataFilePath);
         List<Example> examples = ReadData.getExamples();
-
 
         Evolution.Algorithm chosenAlgorithm = Evolution.Algorithm.GA;
 
@@ -60,12 +61,8 @@ public class Main extends Application {
 
         System.out.println("Starting to run evolution network");
 
-        if (useGUI) {
-            networkRun = new Thread(network);
-            networkRun.start();
-        } else {
-            network.run();
-        }
+
+        evolution.run();
 
         // "Test" the progress bar
         if (useGUI) {
@@ -219,13 +216,19 @@ public class Main extends Application {
             new CommandLineParameter("-o",     "Offspring count",                                              i -> offspringCount = (int) i,            10, CommandLineParameter.Type.Integer),  // Offspring Count
             new CommandLineParameter("-lr",    "Learning Rate",                                                d -> Evolution.learningRate = (double) d,.01, CommandLineParameter.Type.Double),   // Learning Rate
             new CommandLineParameter("-a",     "Algorithm (bp, ga, ds, de)",                                   s -> algorithm = (String) s,            "ga", CommandLineParameter.Type.String),   // Algorithm
-            new CommandLineParameter("-f",     "Data File",                                                    s -> ReadData.load((String) s),  "iris.data", CommandLineParameter.Type.String),   // Data File
+            new CommandLineParameter("-f",     "Data File",                                                    s -> dataFilePath = (String) s,  "iris.data", CommandLineParameter.Type.String),   // Data File
             new CommandLineParameter("-m",     "Mutation Rate",                                              d -> Evolution.mutationChance = (double) d,.05, CommandLineParameter.Type.Double),   // Mutation Rate
             new CommandLineParameter("-b",     "Beta Rate",                                                    d -> Evolution.beta = (double) d,         .1, CommandLineParameter.Type.Double),   // Beta Rate
     };
 
     public static void main(String[] args) {
         try {
+            // Init default values
+            Stream.of(commands)
+                    .parallel()
+                    .filter(command -> command.paramType != CommandLineParameter.Type.Void) // Don't adjust types without params
+                    .forEach(command -> command.func.apply(command.defaultValue));
+
             // Read command flags and use them
             for (int i = 0; i < args.length; i++) {
                 for (CommandLineParameter command : commands) {
@@ -244,19 +247,9 @@ public class Main extends Application {
             System.exit(1);
         }
 
-        // Init default values
-        Stream.of(commands)
-                .parallel()
-                .filter(command -> command.paramType != CommandLineParameter.Type.Void) // Don't adjust types without params
-                .forEach(command -> command.func.apply(command.defaultValue));
-
-        if (useGUI) {
-            launch(args);
-        } else {
-            start(algorithm, hiddenLayers, populationSize, offspringCount);
-            if (!savePath.isEmpty()) save(savePath);
-            System.exit(0);
-        }
+        start(algorithm, hiddenLayers, populationSize, offspringCount);
+        if (!savePath.isEmpty()) save(savePath);
+        System.exit(0);
 
     }
 

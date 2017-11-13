@@ -16,10 +16,11 @@ public class Chromosome implements Comparable {
      * @param network network to make chromosome from
      */
     public Chromosome(Network network, double percentCorrect){
+        network.setNodeConnections();
         this.percentCorrect = percentCorrect;
 
         List<List<Node>> multiNodes = new ArrayList<>();
-        for(Layer layer : network.layers){
+        for (Layer layer : network.layers) {
             multiNodes.add(layer.nodes);
         }
 
@@ -37,7 +38,7 @@ public class Chromosome implements Comparable {
         nodes.stream().parallel().forEach((j) -> IntStream
                         .range(0, j.inputNodes.size())
                         .parallel()
-                        .forEach( index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
+                        .forEach(index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
         );
 
         this.adjacencyMatrix = adjacencyMatrix;
