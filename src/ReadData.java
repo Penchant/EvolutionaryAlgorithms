@@ -11,47 +11,53 @@ public class ReadData {
     public static List<Example> dataIn = new ArrayList<>();
     public static List<String> classList = new ArrayList<>();
 
-    public List<Example> getExamples(){
+    public static List<Example> getExamples() {
         return dataIn;
     }
-    public static void main(String[] args) throws IOException {
-        // open file input stream
-        BufferedReader reader = new BufferedReader(new FileReader("res/abalone.data"));
 
-        // read file line by line
-        String line = null;
-        Scanner scanner = null;
-        int index = 0;
+    public static boolean load(String path) {
+        try {
+            // Open file input stream
+            BufferedReader reader = new BufferedReader(new FileReader(path));
 
-        while ((line = reader.readLine()) != null) {
-            scanner = new Scanner(line);
-            scanner.useDelimiter(",");
-            while (scanner.hasNextLine()) {
-                while (scanner.hasNext()) {
-                    String d = scanner.next();
-                    if (!scanner.hasNext()) {
-                        if(!classList.contains(d)){
-                            classList.add(d);
+
+            // Read file line by line
+            String line;
+            Scanner scanner = null;
+
+            while ((line = reader.readLine()) != null) {
+                scanner = new Scanner(line);
+                scanner.useDelimiter(",");
+                while (scanner.hasNextLine()) {
+                    while (scanner.hasNext()) {
+                        String d = scanner.next();
+                        if (!scanner.hasNext()) {
+                            if (!classList.contains(d)) {
+                                classList.add(d);
+                            }
+                            data.classOutput = d;
+                            break;
                         }
-                        data.classOutput = d;
-                        break;
+                        data.inputs.add(Double.parseDouble(d));
                     }
-                    data.inputs.add(Double.parseDouble(d));
-                    index++;
+                    dataIn.add(data);
+                    data = new Example();
                 }
-                dataIn.add(data);
-                data = new Example();
+
+                dataIn.stream().parallel().forEach((node) -> {
+                    int pos = classList.indexOf(node.classOutput);
+                    IntStream.range(0, classList.size()).parallel().forEach((count) -> node.outputs.add(0d));
+                    data.outputs.set(pos, 1d);
+                });
+
+                // Close reader
+                reader.close();
+                scanner.close();
+                return true;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        dataIn.stream().parallel().forEach((node)-> {
-            int pos = classList.indexOf(node.classOutput);
-            IntStream.range(0, classList.size()).parallel().forEach((count) -> node.outputs.add(0d));
-            data.outputs.set(pos, 1d);
-        });
-
-        //close reader
-        reader.close();
-        scanner.close();
+        return false;
     }
 }
