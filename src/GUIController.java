@@ -27,11 +27,7 @@ public class GUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setDataGenStartTextField(Main.dataGenStart);
-        setDataGenEndTextField(Main.dataGenEnd);
-        setDataGenIncrementTextField(Main.dataGenIncrement);
         setHiddenLayersTextField(Main.hiddenLayers);
-        setInputCountTextField(Main.dimension);
         setNodesPerHiddenLayerTextField(Network.learningRate);
     }
 
@@ -99,7 +95,7 @@ public class GUIController implements Initializable {
 
             Network.learningRate = Double.parseDouble(nodesPerHiddenLayerTextField.getText());
 
-            Main.start(dataGenStart, dataGenEnd, dataGenIncrement, hiddenLayers, dimension, isRadialBasis);
+//            Main.start(dataGenStart, dataGenEnd, dataGenIncrement, hiddenLayers, dimension, isRadialBasis);
         } catch (NumberFormatException nfe) {
             System.err.println("Invalid arguments");
         }

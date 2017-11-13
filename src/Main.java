@@ -18,44 +18,47 @@ import java.util.stream.Stream;
 
 public class Main extends Application {
 
-    public static double dataGenStart;
-    public static double dataGenEnd;
-    public static double dataGenIncrement;
     public static List<Integer> hiddenLayers;
-    public static int dimension;
+    public static int populationSize;
+    public static int offspringCount;
+    public static String algorithm;
+    public static double mutationRate;
+
     private static Stage primaryStage;
     private static GUIController controller;
     private static Network network;
     private static boolean shouldStop = false;
     public static boolean shouldPause = false;
     private static boolean useGUI = true;
-    private static boolean isRadialBasis = false;
     private static String savePath;
     private static Thread networkRun;
     private static javax.swing.Timer timer;
     private static double progress = 0;
     private static int direction = 1;
 
-    public static void start(double dataGenStart, double dataGenEnd, double dataGenIncrement, List<Integer> hiddenLayers, int inputCount, boolean isRadialBasis) {
+    public static void start(String algorithm, List<Integer> hiddenLayers, int populationSize, int numOfChildren) {
         System.out.println("Starting");
 
-        ReadData data = new ReadData();
-        try {
-            ReadData.main(null);
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<Example> examples = ReadData.getExamples();
+
+
+        Evolution.Algorithm chosenAlgorithm = Evolution.Algorithm.GA;
+
+        if (algorithm.equals("GA")) {
+            chosenAlgorithm = Evolution.Algorithm.GA;
+        } else if (algorithm.equals("BP")) {
+            chosenAlgorithm = Evolution.Algorithm.BP;
+        } else if (algorithm.equals("ES")) {
+            chosenAlgorithm = Evolution.Algorithm.ES;
+        } else if (algorithm.equals("DE")) {
+            chosenAlgorithm = Evolution.Algorithm.DE;
         }
 
-        List<Example> examples = data.getExamples();
+        Evolution evolution = new Evolution(chosenAlgorithm, hiddenLayers, examples, populationSize, numOfChildren);
 
-        // Create network with examples from data generation
-        if (network == null) {
-            network = new Network(hiddenLayers, examples.get(0).inputs.size(), isRadialBasis,  examples);
-        }
+        System.out.println("Created evolution network");
 
-        System.out.println("Created network");
-
-        System.out.println("Starting to run network");
+        System.out.println("Starting to run evolution network");
 
         if (useGUI) {
             networkRun = new Thread(network);
@@ -210,23 +213,19 @@ public class Main extends Application {
     private static CommandLineParameter[] commands = {
             new CommandLineParameter("-nogui", "Runs the application without a GUI",                           f -> useGUI = false,                    true, CommandLineParameter.Type.Void),     // No GUI
             new CommandLineParameter("-h",     "Displays the help text",                                       f -> printHelp(),                       null, CommandLineParameter.Type.Void),     // Help
-            new CommandLineParameter("-rb",    "Sets the network to use radial basis",                         f -> isRadialBasis = true,             false, CommandLineParameter.Type.Void),     // Radial Basis
-            new CommandLineParameter("-ds",    "The start point for the data (example) generation",            i -> dataGenStart = (double) i,           0d, CommandLineParameter.Type.Double),   // Data Generation Start
-            new CommandLineParameter("-de",    "The end point for the data (example) generation",              i -> dataGenEnd = (double) i,             2d, CommandLineParameter.Type.Double),   // Data Generation End
-            new CommandLineParameter("-di",    "The incrementation of the data point",                         i -> dataGenIncrement = (double) i,      .1d, CommandLineParameter.Type.Double),   // Data Generation Incrementation
             new CommandLineParameter("-hl",    "The amount of hidden layers, and the amount of nodes in each", s -> parseHiddenLayers((String) s),  "40,40", CommandLineParameter.Type.String),   // Hidden Layers
-            new CommandLineParameter("-d",     "The number of dimensions the function will use",               i -> dimension = (int) i,                  2, CommandLineParameter.Type.Integer),  // Dimensions
             new CommandLineParameter("-s",     "Save the weights to a given output file",                      s -> savePath = (String) s,               "", CommandLineParameter.Type.String),   // Save
+            new CommandLineParameter("-p",     "Population size",                                              i -> populationSize = (int) i,            10, CommandLineParameter.Type.Integer),  // Population Size
+            new CommandLineParameter("-o",     "Offspring count",                                              i -> offspringCount = (int) i,            10, CommandLineParameter.Type.Integer),  // Offspring Count
+            new CommandLineParameter("-lr",    "Learning Rate",                                                d -> Evolution.learningRate = (double) d,.01, CommandLineParameter.Type.Double),   // Learning Rate
+            new CommandLineParameter("-a",     "Algorithm (bp, ga, ds, de)",                                   s -> algorithm = (String) s,            "ga", CommandLineParameter.Type.String),   // Algorithm
+            new CommandLineParameter("-f",     "Data File",                                                    s -> ReadData.load((String) s),  "iris.data", CommandLineParameter.Type.String),   // Data File
+            new CommandLineParameter("-m",     "Mutation Rate",                                              d -> Evolution.mutationChance = (double) d,.05, CommandLineParameter.Type.Double),   // Mutation Rate
+            new CommandLineParameter("-b",     "Beta Rate",                                                    d -> Evolution.beta = (double) d,         .1, CommandLineParameter.Type.Double),   // Beta Rate
     };
 
     public static void main(String[] args) {
         try {
-            // Init default values
-            Stream.of(commands)
-                    .parallel()
-                    .filter(command -> command.paramType != CommandLineParameter.Type.Void) // Don't adjust types without params
-                    .forEach(command -> command.func.apply(command.defaultValue));
-
             // Read command flags and use them
             for (int i = 0; i < args.length; i++) {
                 for (CommandLineParameter command : commands) {
@@ -245,10 +244,16 @@ public class Main extends Application {
             System.exit(1);
         }
 
+        // Init default values
+        Stream.of(commands)
+                .parallel()
+                .filter(command -> command.paramType != CommandLineParameter.Type.Void) // Don't adjust types without params
+                .forEach(command -> command.func.apply(command.defaultValue));
+
         if (useGUI) {
             launch(args);
         } else {
-            start(dataGenStart, dataGenEnd, dataGenIncrement, hiddenLayers, dimension, isRadialBasis);
+            start(algorithm, hiddenLayers, populationSize, offspringCount);
             if (!savePath.isEmpty()) save(savePath);
             System.exit(0);
         }
