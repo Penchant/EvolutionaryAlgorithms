@@ -47,7 +47,7 @@ public class Network implements Runnable {
         Layer inputLayer = new Layer(Type.INPUT);
 
         List inputLayerIndices = chromosome.getLayerIndices((j) ->
-                IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] != 0));
+                IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] == 0));
 
         this.examples = examples;
 
