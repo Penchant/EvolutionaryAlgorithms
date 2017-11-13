@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -11,12 +8,17 @@ public class Evolution {
     double minRange = -0.1;
     double maxRange = 0.1;
     int mutationChance = 1000;
+    int populationSize;
     List<Chromosome> population;
     public int numParents = 2;
     static Random random = new Random();
 
     public enum Algorithm {
         GA, ES, DE
+    }
+
+    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize){
+        
     }
 
     /**
@@ -37,6 +39,16 @@ public class Evolution {
 
         return parents;
     }
+
+    public  void selectNewPopulation() {
+    	List<Chromosome> sortedPop = new ArrayList<>();
+
+    	for (int i = 0; i<population.size(); i++)
+    	sortedPop.add(i, population.get(i));
+
+		Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
+		sortedPop.subList(populationSize, population.size()).clear();
+	}
 
     /**
      * 
