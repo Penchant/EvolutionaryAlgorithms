@@ -9,6 +9,8 @@ public class Chromosome implements Comparable {
     public double[][] adjacencyMatrix;
     public double percentCorrect;
 
+    public Chromosome(){}
+
     /**
      * Creates a chromosome from a network
      * @param network network to make chromosome from
