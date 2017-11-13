@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Evolution {
@@ -9,15 +6,32 @@ public class Evolution {
     double minRange = -0.1;
     double maxRange = 0.1;
     int mutationChance = 1000;
+
     int anealFactor = 5;
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
+    int populationSize;
+	
+	double Beta = 0.5;
+
     List<Chromosome> population;
     public int numParents = 2;
     static Random random = new Random();
 
     public enum Algorithm {
         GA, ES, DE
+    }
+
+    /**
+     * Constructor for Chromosomes
+     * @param hiddenLayers List containing number of nodes per layer
+     * @param dimension Number of input nodes
+     * @param outputDimension Number of output nodes
+     * @param populationSize Number of individuals to have in population
+     * @param numOfChildren Number of children
+     */
+    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren) {
+
     }
 
     /**
@@ -28,8 +42,8 @@ public class Evolution {
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
-        ranges.add(size);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + size - index));
+        ranges.add(1);
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
 
         List<Chromosome> parents = new ArrayList<>();
 
@@ -38,11 +52,65 @@ public class Evolution {
 
         return parents;
     }
+	
+	/**
+	* selectESParents
+	* @return returns a list of parents. One is a weighted random individual based
+	* 	on rank. The other three are random individuals that must be mutually exclusive.
+	*/
+	private List<Chromosome> selectESParents () {
+		Collections.sort(population);
+        List<Integer> ranges = new ArrayList<>();
+        final int size = population.size();
+        ranges.add(1);
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
+
+        List<Integer> parentIndexes = new ArrayList<>();
+
+        //Create one parent
+        IntStream.range(0, 1).parallel().forEach((index) -> parentIndexes.add(chooseParentIndexes(ranges)));
+		int x1 = 0, x2 = 0, x3 = 0, x;
+		x = parentIndexes.get (0);
+		do {
+			x1 = (int) (Math.random () * population.size ());
+		}while (x1 == x);
+		
+		do {
+			x2 = (int) (Math.random () * population.size ());
+		} while (x2 == x || x2 == x1);
+		
+		do {
+			x3 = (int) (Math.random () * population.size ());
+		}while (x3 == x || x3 == x1 || x3 == x2);
+		
+		List<Chromosome> parents = new ArrayList<> ();
+		parents.add (population.get (x));
+		parents.add (population.get (x1));
+		parents.add (population.get (x2));
+		parents.add (population.get (x3));
+		
+        return parents;
+	}
 
     /**
-     * 
-     * @param ranges
-     * @return
+     * Selects new population based on top fitness (percent correct)
+     */
+    public void selectNewPopulation() {
+        List<Chromosome> sortedPop = new ArrayList<>();
+
+    	for (int i = 0; i < population.size(); i++) {
+            sortedPop.add(i, population.get(i));
+        }
+
+    	Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
+    	sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
+    	population = sortedPop;
+    }
+
+     /**
+     * Chooses a parent for crossover probabilistically
+     * @param ranges Ranges determining probabilities
+     * @return Parent chromosome
      */
     private Chromosome chooseParent(List<Integer> ranges) {
         double rand1 = Math.random();
@@ -54,13 +122,75 @@ public class Evolution {
         }
 
         return population.get(indexParent1);
+    }
+	
+	/**
+     * Chooses a parent index for crossover probabilistically
+     * @param ranges Ranges determining probabilities
+     * @return Parent chromosome index
+     */
+	private Integer chooseParentIndexes(List<Integer> ranges) {
+        double rand1 = Math.random();
+        int decideParent1 = (int)(rand1 * population.size());
+        int indexParent1 = Collections.binarySearch(ranges, decideParent1);
 
+        if(indexParent1 < 0) {
+            indexParent1 = indexParent1 * -1 - 1;
+        }
+
+        return new Integer (indexParent1);
     }
 
-    public Chromosome crossover() {
+    /**
+     * Creates a Chromosome from 2 parents created during crossover
+     * @param parents parents to create child
+     * @return Returns child chromosome
+     */
+    public Chromosome crossover(List<Chromosome> parents) {
+
+        List<Integer> fromParent = new ArrayList<>();
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) -> {
+                double gene = Math.random();
+                if(gene >= .5) {
+                    fromParent.set(index, 0);
+                }
+                else {
+                    fromParent.set(index, 1);
+                }
+            }
+        );
+
+        Chromosome chromosome = new Chromosome();
+        chromosome.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
+
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) ->
+            IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((i) ->
+                    chromosome.adjacencyMatrix[i][index] = parents.get(fromParent.get(index)).adjacencyMatrix[i][index])
+        );
+
         //Here so it builds
-        return population.get(0);
+        return chromosome;
     }
+	
+	/**
+	* crossoverES
+	* @params parents - parents that are used to create an offspring
+	* @return an offspring;
+	* Creates a trial vector from three random parents and then multiplies the trial by the
+	* original parent. 
+	*/
+	public Chromosome crossoverES (List<Chromosome> parents) {
+		Chromosome trial = new Chromosome ();
+		Chromosome offspring = new Chromosome ();
+		for (int i = 0; i < trial.adjacencyMatrix.length; i++) {
+			for (int j = i + 1; j < trial.adjacencyMatrix[i].length; j++) {
+				trial.adjacencyMatrix[i][j] = parents.get (1).adjacencyMatrix [i][j] +
+					Beta * (parents.get (2).adjacencyMatrix[i][j] - parents.get (3).adjacencyMatrix[i][j]);
+				offspring.adjacencyMatrix[i][j] = parents.get (0).adjacencyMatrix[i][j] * trial.adjacencyMatrix[i][j];
+			}
+		}
+		return offspring;
+	}
 
     /**
     * Mutation
@@ -69,7 +199,7 @@ public class Evolution {
     * @param epoch - this is the number of generations the child is since the first.
     * @return returns the mutated child Chromosome
     * will mutate a chromosome. it goes through each element in the chromosome
-    * and when a random numer pull (0, mutationChance] is equal 0 it will mutate that element.
+    * and when a random number (0, mutationChance] is 0 it will mutate that number.
     *
     * The mutation algorithm depends on whether it is doing creep or evolution strategy
     * based on wether the evoStrat is null or not.
