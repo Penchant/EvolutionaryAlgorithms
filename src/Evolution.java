@@ -7,7 +7,7 @@ public class Evolution {
     double maxRange = 0.1;
     int mutationChance = 1000;
 
-    int anealFactor = 5;
+    int annealFactor = 5;
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
     int populationSize;
@@ -126,7 +126,7 @@ public class Evolution {
     * The mutation algorithm depends on whether it is doing creep or evolution strategy
     * based on wether the evoStrat is null or not.
     *
-    * epoch is used to aneal the non evoStrat algorithms
+    * epoch is used to anneal the non evoStrat algorithms
     */
     public Chromosome mutation(Chromosome child, Chromosome evoStrat, int epoch) {
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
@@ -136,8 +136,8 @@ public class Evolution {
                     if (evoStrat == null) {
                         double creep = randomInRange(minRange, maxRange);
                         if (epoch != 0) {
-                            double aneal = (anealFactor * 1 / (epochMultiplier * epoch) + 1);
-                            creep = aneal * creep;
+                            double anneal = (annealFactor * 1 / (epochMultiplier * epoch) + 1);
+                            creep = anneal * creep;
                         }
                         child.adjacencyMatrix[i][j] = child.adjacencyMatrix[i][j] + creep;
                     }
