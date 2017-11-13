@@ -43,7 +43,7 @@ public class Network implements Runnable {
         int numCols = chromosome.adjacencyMatrix[0].length;
         int numRows = chromosome.adjacencyMatrix.length;
         int priorLayerNode = -1;
-        Network net = new Network();
+
         Layer inputLayer = new Layer(Type.INPUT);
 
         List inputLayerIndices = chromosome.getLayerIndices((j) ->
@@ -55,8 +55,9 @@ public class Network implements Runnable {
         // so to allow getting the indices to be done in parallel, list is collected and then nodes are added
         inputLayerIndices.stream().forEach(index -> chromosome.addNodeToLayer((Integer) index, inputLayer));
 
-        net.layers.add(inputLayer);
-        boolean isOutputLayer = true;
+        this.layers.add(inputLayer);
+        priorLayerNode = (int)inputLayerIndices.get(0);
+        boolean isOutputLayer = false;
 
         while(!isOutputLayer){
             List<Integer> nextLayerIndices = chromosome.getNextLayerIndices(priorLayerNode);
@@ -67,9 +68,10 @@ public class Network implements Runnable {
 
             Layer newLayer = new Layer(0, isOutputLayer ? Type.OUTPUT : Type.HIDDEN);
             nextLayerIndices.stream().parallel().forEach((index) -> chromosome.addNodeToLayer(index, newLayer));
+            this.layers.add(newLayer);
         }
 
-        net.setNodeConnections();
+        this.setNodeConnections();
     }
 
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {

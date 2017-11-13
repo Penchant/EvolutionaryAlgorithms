@@ -94,7 +94,6 @@ public class Chromosome implements Comparable {
     public List<Integer> getLayerIndices(IntPredicate filter) {
 
         return IntStream.range(0, adjacencyMatrix.length)
-                .parallel()
                 .filter(filter)
                 .mapToObj(index -> index)
                 .collect(Collectors.toList());
