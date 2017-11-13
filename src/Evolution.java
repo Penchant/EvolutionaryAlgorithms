@@ -68,7 +68,6 @@ public class Evolution implements Runnable {
      */
     private void geneticAlgorithm() {
         IntStream.range(0, numOfChildren)
-                .parallel()
                 .mapToObj(i-> crossover(this.selectParents()))
                 .peek(child -> this.mutation(child, null, epoch))
                 .forEach(child -> this.population.add(child));
@@ -106,16 +105,17 @@ public class Evolution implements Runnable {
      * @return The parents to crossover
      */
     private List<Chromosome> selectParents() {
+        System.out.println("Selecting Parents");
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
         ranges.add(1);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index - 1) + index + 1));
 
         List<Chromosome> parents = new ArrayList<>();
 
         //Create as many parents as desired
-        IntStream.range(0, numParents).parallel().forEach((index) -> parents.add(chooseParent(ranges)));
+        IntStream.range(0, numParents).forEach((index) -> parents.add(chooseParent(ranges)));
 
         return parents;
     }
@@ -163,6 +163,7 @@ public class Evolution implements Runnable {
      * Selects new population based on top fitness (percent correct)
      */
     public List<Chromosome> selectNewPopulation(List<Chromosome> population) {
+        System.out.println("Selecting New Population");
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
@@ -215,13 +216,12 @@ public class Evolution implements Runnable {
      */
     public Chromosome crossover(List<Chromosome> parents) {
         List<Integer> fromParent = new ArrayList();
-        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) -> {
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).forEach((index) -> {
                 double gene = Math.random();
                 if(gene >= .5) {
-                    fromParent.set(index, 0);
-                }
-                else {
-                    fromParent.set(index, 1);
+                    fromParent.add(0);
+                } else {
+                    fromParent.add(1);
                 }
             }
         );
@@ -272,6 +272,7 @@ public class Evolution implements Runnable {
     * epoch is used to anneal the non evoStrat algorithms
     */
     public Chromosome mutation(Chromosome child, Chromosome evoStrategy, int epoch) {
+        System.out.println("Mutating");
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
                 if (Math.random() < mutationChance) {

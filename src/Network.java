@@ -424,8 +424,11 @@ public class Network implements Runnable {
         IntStream.range(1, layers.size()).parallel().forEach(
                 index -> {
                     Layer currentLayer = layers.get(index);
-                    currentLayer.nodes.stream().parallel().forEach(
-                            node -> node.inputNodes.addAll(layers.get(index - 1).nodes)
+                    currentLayer.nodes.stream().forEach(
+                            node ->  {
+                                node.inputNodes.clear();
+                                node.inputNodes.addAll(layers.get(index - 1).nodes);
+                            }
                     );
                 }
         );

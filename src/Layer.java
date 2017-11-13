@@ -21,12 +21,10 @@ public class Layer {
         this.layerType = layerType;
         this.id = count++;
 
-        int inputCount = layerType == Type.INPUT ? nodeCount : network.layers.get(id - 1).nodes.size();
-
         nodes = IntStream.range(0, nodeCount)
                 .boxed()
                 .parallel()
-                .map(i -> new Node(layerType, inputCount))
+                .map(i -> new Node(layerType, nodeCount))
                 .collect(Collectors.toList());
     }
 

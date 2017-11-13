@@ -21,7 +21,7 @@ public class Node {
     public double mu = 0;
     public double delta;
     public int id;
-    public List<Node> inputNodes;
+    public List<Node> inputNodes = new ArrayList<Node>();
 
     private Type nodeType;
 
@@ -67,7 +67,6 @@ public class Node {
     }
 
     public double calculateOutput() {
-
         return output = activationFunction.apply(
                 IntStream.range(0, inputs.size())
                         .boxed()

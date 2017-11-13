@@ -35,10 +35,11 @@ public class Chromosome implements Comparable {
                 .forEach(index -> nodes.get(index).id = index);
 
         double[][] adjacencyMatrix = new double[nodes.size()][nodes.size()];
-        nodes.stream().parallel().forEach((j) -> IntStream
+
+        nodes.stream().forEach((j) -> IntStream
                         .range(0, j.inputNodes.size())
                         .parallel()
-                        .forEach(index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.inputs.get(index))
+                        .forEach(index -> adjacencyMatrix[j.inputNodes.get(index).id][j.id] = j.weights.get(index))
         );
 
         this.adjacencyMatrix = adjacencyMatrix;
