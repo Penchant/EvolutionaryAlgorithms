@@ -15,6 +15,7 @@ public class Evolution implements Runnable {
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
     int populationSize;
+    int epoch = 0;
 
     List<Chromosome> population;
     public int numParents = 2;
@@ -62,13 +63,23 @@ public class Evolution implements Runnable {
         }
     }
 
+    /**
+     *
+     */
     private void geneticAlgorithm() {
+        IntStream.range(0, numOfChildren)
+                .parallel()
+                .mapToObj(i-> crossover(this.selectParents()))
+                .peek(child -> this.mutation(child, null, epoch))
+                .forEach(child -> this.population.add(child));
+        this.population = this.selectNewPopulation(this.population);
     }
-    private void evolutionStrategies(){
+
+    private void evolutionStrategies() {
 
     }
 
-    private void differentialEvolution(){
+    private void differentialEvolution() {
 
     }
 
@@ -150,7 +161,7 @@ public class Evolution implements Runnable {
     /**
      * Selects new population based on top fitness (percent correct)
      */
-    public void selectNewPopulation() {
+    public List<Chromosome> selectNewPopulation(List<Chromosome> population) {
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
@@ -159,7 +170,7 @@ public class Evolution implements Runnable {
 
         Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
         sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
-        population = sortedPop;
+        return sortedPop;
     }
 
      /**
