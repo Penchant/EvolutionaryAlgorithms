@@ -25,7 +25,7 @@ public class Evolution {
      * @param populationSize Number of individuals to have in population
      * @param numOfChildren Number of children
      */
-    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren){
+    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren) {
 
     }
 
@@ -52,14 +52,15 @@ public class Evolution {
      * Selects new population based on top fitness (percent correct)
      */
     public  void selectNewPopulation() {
-    	List<Chromosome> sortedPop = new ArrayList<>();
+        List<Chromosome> sortedPop = new ArrayList<>();
 
     	for (int i = 0; i<population.size(); i++)
-    	sortedPop.add(i, population.get(i));
+    	    sortedPop.add(i, population.get(i));
 
-		Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
-		sortedPop.subList(0, (population.size() - populationSize)).clear();
-	}
+    	Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
+    	sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
+    	population = sortedPop;
+    }
 
     /**
      * 
