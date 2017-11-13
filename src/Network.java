@@ -5,13 +5,11 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class Network implements Runnable {
@@ -27,17 +25,56 @@ public class Network implements Runnable {
     private int hiddenLayers;
     private int dimension;
 
-    public static double learningRate = .000001d;
+    public static double learningRate = .0001d;
 
+    /**
+     * Blank constructor for Chromosome.ToNetwork()
+     */
+    public Network(){}
+
+    /**
+     * Creates network from chromosome
+     * @param chromosome chromosome to create network from
+     */
+    public Network(Chromosome chromosome){
+        int numCols = chromosome.adjacencyMatrix[0].length;
+        int numRows = chromosome.adjacencyMatrix.length;
+        int priorLayerNode = -1;
+        Network net = new Network();
+        Layer inputLayer = new Layer(Type.INPUT);
+
+        List inputLayerIndices = chromosome.getLayerIndices((j) ->
+                IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] != 0));
+
+        // Adding nodes to layers must be done sequentially because the order is assumed to be maintained
+        // so to allow getting the indices to be done in parallel, list is collected and then nodes are added
+        inputLayerIndices.stream().forEach(index -> chromosome.addNodeToLayer((Integer) index, inputLayer));
+
+        net.layers.add(inputLayer);
+        boolean isOutputLayer = true;
+
+        while(!isOutputLayer){
+            List<Integer> nextLayerIndices = chromosome.getNextLayerIndices(priorLayerNode);
+
+            // Update
+            priorLayerNode = nextLayerIndices.get(0);
+            isOutputLayer = chromosome.getNextLayerIndices(priorLayerNode).isEmpty();
+
+            Layer newLayer = new Layer(0, isOutputLayer ? Type.OUTPUT : Type.HIDDEN);
+            nextLayerIndices.stream().parallel().forEach((index) -> chromosome.addNodeToLayer(index, newLayer));
+        }
+
+        net.setNodeConnections();
+    }
 
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {
-        if (hiddenLayers.get(0)== 0){
+        if (hiddenLayers.get(0) == 0){
             this.hiddenLayers = 0;
         } else {
             this.hiddenLayers = hiddenLayers.size();
         }
         this.dimension = dimension;
-        this.learningRate = learningRate / examples.size();
+        learningRate = learningRate / examples.size();
 
         Layer.network = this;
 
@@ -69,6 +106,7 @@ public class Network implements Runnable {
         }
 
         layers.add(new Layer(examples.get(0).outputs.size(), Type.OUTPUT));
+        setNodeConnections();
     }
 
     public void setupExamples () {
@@ -127,6 +165,8 @@ public class Network implements Runnable {
                     Double networkOutput = forwardPropagate(example);
                     output.add(networkOutput);
 
+                    //System.out.println(networkOutput);
+
                     if (Double.isNaN(networkOutput)) {
                         System.err.println("NaN");
                         System.exit(1);
@@ -137,6 +177,15 @@ public class Network implements Runnable {
 
                 layers.parallelStream().forEach(Layer::updateNodeWeights);
 
+                double mean = output.parallelStream().mapToDouble(d -> d).sum();
+
+                double standardDeviation = output
+                        .parallelStream()
+                        .mapToDouble(d -> Math.pow(d - mean, 2))
+                        .sum() / (output.size() - 1);
+                standardDeviation = Math.sqrt(standardDeviation);
+
+                System.out.println("Mean is " + mean + " and standard deviation is " + standardDeviation);
 
                 List<Double> outputs = examples
                         .stream()
@@ -210,9 +259,9 @@ public class Network implements Runnable {
         Layer input = layers.get(0);
 
         // For each node in the input layer, set the input to the node
-        input.nodes.parallelStream().forEach(node -> {
-            node.inputs.clear();
-            node.inputs.addAll(example.inputs);
+        IntStream.range(0, example.inputs.size()).parallel().forEach(index -> {
+            input.nodes.get(index).inputs.clear();
+            input.nodes.get(index).inputs.add(example.inputs.get(index));
         });
 
         // Calculate the output for each layer and pass it into the next layer
@@ -290,7 +339,27 @@ public class Network implements Runnable {
         }
     }
 
-    public List<Double> calculateError() {return null;}
+    /**
+     * Converts the network to a chromosome
+     * @return Returns the network represented as chromosome
+     */
+    public Chromosome toChromosome() {
+        return new Chromosome(this);
+    }
+
+    /**
+     * Sets the inputNodes on all nodes
+     */
+    public void setNodeConnections() {
+        IntStream.range(1, layers.size()).parallel().forEach(
+                index -> {
+                    Layer currentLayer = layers.get(index);
+                    currentLayer.nodes.stream().parallel().forEach(
+                            node -> node.inputNodes.addAll(layers.get(index - 1).nodes)
+                    );
+                }
+        );
+    }
 
     private double calculateSigma() {
         double maxDistance = 0;
@@ -315,8 +384,6 @@ public class Network implements Runnable {
 
         return Math.sqrt(maxDistance);
     }
-
-
 
     /**
      * Calculates total error from Rosenbrock inputs and output from nodes
