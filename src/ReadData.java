@@ -20,7 +20,7 @@ public class ReadData {
             BufferedReader reader = new BufferedReader(new FileReader(path));
 
             // read file line by line
-            String line = null;
+            String line;
             Scanner scanner = null;
 
             while ((line = reader.readLine()) != null) {
@@ -41,7 +41,7 @@ public class ReadData {
                             int pos = classList.indexOf(d);
                             data.outputs.set(pos, 1d);
                             break;
-                        } else ;
+                        }
                         data.inputs.add(Double.parseDouble(d));
                     }
                     dataIn.add(data);
