@@ -64,23 +64,23 @@ public class Evolution {
 
         List<Integer> fromParent = new ArrayList<>();
         IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) -> {
-            double gene = Math.random();
-            if(gene >= .5){
-                fromParent.set(index, 0);
-            }
-            else {
-                fromParent.set(index, 1);
-            }
+                double gene = Math.random();
+                if(gene >= .5) {
+                    fromParent.set(index, 0);
                 }
+                else {
+                    fromParent.set(index, 1);
+                }
+            }
         );
 
         Chromosome chromosome = new Chromosome();
         chromosome.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
 
-        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) ->{
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) ->
             IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((i) ->
-                    chromosome.adjacencyMatrix[i][index] = parents.get(fromParent.get(index)).adjacencyMatrix[i][index]);
-        });
+                    chromosome.adjacencyMatrix[i][index] = parents.get(fromParent.get(index)).adjacencyMatrix[i][index])
+        );
 
         //Here so it builds
         return chromosome;

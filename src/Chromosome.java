@@ -9,13 +9,15 @@ public class Chromosome implements Comparable {
     public double[][] adjacencyMatrix;
     public double percentCorrect;
 
-    public Chromosome(){}
+    public Chromosome() {}
 
     /**
      * Creates a chromosome from a network
      * @param network network to make chromosome from
      */
     public Chromosome(Network network, double percentCorrect){
+        this.percentCorrect = percentCorrect;
+
         List<List<Node>> multiNodes = new ArrayList<>();
         for(Layer layer : network.layers){
             multiNodes.add(layer.nodes);
