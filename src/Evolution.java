@@ -17,8 +17,15 @@ public class Evolution {
         GA, ES, DE
     }
 
+    /**
+     * Constructor for Chromosomes
+     * @param hiddenLayers
+     * @param dimension
+     * @param outputDimension
+     * @param populationSize
+     */
     public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize){
-        
+
     }
 
     /**

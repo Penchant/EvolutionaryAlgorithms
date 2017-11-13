@@ -302,6 +302,10 @@ public class Network implements Runnable {
         return layers.get(layers.size() - 1).calculateNodeOutputs();
     }
 
+    /**
+     * Calculate percent correct for list of outputs for a given Chromosome
+     * @return the percentage of correctly guessed classes
+     */
     public double getPercentCorrect(){
         int numCorrect = 0;
         double temp;
@@ -339,8 +343,7 @@ public class Network implements Runnable {
 
 
     /**
-     * Use forwardProp to get output layer // TODO: ??????
-     *
+     * Uses outputs to update weights through backpropagation
      * @param target
      */
     public void backPropagate(List<Double> target) {
