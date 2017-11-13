@@ -27,8 +27,8 @@ public class Evolution {
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
-        ranges.add(size);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + size - index));
+        ranges.add(1);
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
 
         List<Chromosome> parents = new ArrayList<>();
 
@@ -57,7 +57,7 @@ public class Evolution {
 
     /**
      * Creates a Chromosome from 2 parents created during crossover
-     * @param parents parents to create child from
+     * @param parents parents to create child
      * @return Returns child chromosome
      */
     public Chromosome crossover(List<Chromosome> parents) {
