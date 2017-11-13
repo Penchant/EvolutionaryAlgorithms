@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class ReadData {
     public static Example data = new Example();
@@ -27,34 +28,36 @@ public class ReadData {
                 scanner = new Scanner(line);
                 scanner.useDelimiter(",");
                 while (scanner.hasNextLine()) {
-                    for (int i = 0; i < 8; i++) {
-                        data.outputs.add(0d);
-                    }
                     while (scanner.hasNext()) {
-                        String d = scanner.next();
+                        String currentInput = scanner.next();
                         if (!scanner.hasNext()) {
-                            if (!classList.contains(d)) {
-                                classList.add(d);
-                                break;
+                            if (!classList.contains(currentInput)) {
+                                classList.add(currentInput);
                             }
-                            // Comparing class value to index of classIndex, set to 1
-                            int pos = classList.indexOf(d);
-                            data.outputs.set(pos, 1d);
+                            data.classOutput = currentInput;
                             break;
                         }
-                        data.inputs.add(Double.parseDouble(d));
+                        data.inputs.add(Double.parseDouble(currentInput));
                     }
                     dataIn.add(data);
                     data = new Example();
                 }
+
+                dataIn.stream().parallel().forEach((node) -> {
+                    int pos = classList.indexOf(node.classOutput);
+                    IntStream.range(0, classList.size()).parallel().forEach((count) -> node.outputs.add(0d));
+                    data.outputs.set(pos, 1d);
+                });
+
+
+                scanner.close();
+                return true;
             }
-            // Close reader
             reader.close();
-            scanner.close();
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return false;
     }
 }
