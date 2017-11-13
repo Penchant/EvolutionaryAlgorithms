@@ -46,6 +46,13 @@ public class ReadData {
                 scanner.close();
                 return true;
             }
+
+            dataIn.stream().parallel().forEach((node) -> {
+                int pos = classList.indexOf(node.classOutput);
+                IntStream.range(0, classList.size()).parallel().forEach((count) -> node.outputs.add(0d));
+                data.outputs.set(pos, 1d);
+            });
+
             reader.close();
 
             dataIn.stream().forEach((node) -> {
