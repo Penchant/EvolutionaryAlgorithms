@@ -4,7 +4,7 @@ import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Chromosome {
+public class Chromosome implements Comparable {
 
     public double[][] adjacencyMatrix;
     public double percentCorrect;
@@ -37,6 +37,30 @@ public class Chromosome {
         );
 
         this.adjacencyMatrix = adjacencyMatrix;
+    }
+
+    /**
+     * Compares two chromosomes
+     * @param o chromosome to compare with
+     * @return -1 if o is correct less often, 0 if equal, 1 if o is correct more often
+     */
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof Chromosome)) {
+            throw new RuntimeException("Object compared must be a Chromosome");
+        }
+
+        Chromosome chromosome = (Chromosome) o;
+
+        if (chromosome.percentCorrect < this.percentCorrect) {
+            return -1;
+        }
+
+        if (chromosome.percentCorrect == this.percentCorrect) {
+            return 0;
+        }
+
+        return  1;
     }
 
     /**
