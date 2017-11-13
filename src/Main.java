@@ -40,10 +40,10 @@ public class Main extends Application {
         System.out.println("Starting");
 
         ReadData data = new ReadData();
-        try{
+        try {
             ReadData.main(null);
-        }catch (IOException e){
-
+        } catch (IOException e){
+            e.printStackTrace();
         }
 
         List<Example> examples = data.getExamples();

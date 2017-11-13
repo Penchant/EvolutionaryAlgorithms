@@ -291,7 +291,7 @@ public class Network implements Runnable {
         double temp;
         double max = 0;
 
-        if(percentCorrect >=0)
+        if(percentCorrect >= 0)
             return percentCorrect;
 
             List<List<Double>> outputs = new ArrayList<>();
