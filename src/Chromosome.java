@@ -45,19 +45,21 @@ public class Chromosome implements Comparable {
      * @return -1 if o is correct less often, 0 if equal, 1 if o is correct more often
      */
     @Override
-    public int compareTo(Object o){
-        if((o instanceof Chromosome)){
+    public int compareTo(Object o) {
+        if (!(o instanceof Chromosome)) {
             throw new RuntimeException("Object compared must be a Chromosome");
         }
 
         Chromosome chromosome = (Chromosome) o;
 
-        if(chromosome.percentCorrect < this.percentCorrect){
+        if (chromosome.percentCorrect < this.percentCorrect) {
             return -1;
         }
-        if(chromosome.percentCorrect == this.percentCorrect){
+
+        if (chromosome.percentCorrect == this.percentCorrect) {
             return 0;
         }
+
         return  1;
     }
 
