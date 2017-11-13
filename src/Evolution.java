@@ -103,7 +103,7 @@ public class Evolution implements Runnable {
      * @return The parents to crossover
      */
     private List<Chromosome> selectParents() {
-        System.out.println("Selecting Parents");
+        Logger.log("Selecting Parents", Logger.Level.shout);
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
@@ -161,7 +161,7 @@ public class Evolution implements Runnable {
      * Selects new population based on top fitness (percent correct)
      */
     public List<Chromosome> selectNewPopulation(List<Chromosome> population) {
-        System.out.println("Selecting New Population");
+        Logger.log("Selecting New Population", Logger.Level.shout);
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
@@ -270,7 +270,7 @@ public class Evolution implements Runnable {
     * epoch is used to anneal the non evoStrat algorithms
     */
     public Chromosome mutation(Chromosome child, Chromosome evoStrategy, int epoch) {
-        System.out.println("Mutating");
+        Logger.log("Mutating", Logger.Level.shout);
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
                 if (Math.random() < mutationChance) {
