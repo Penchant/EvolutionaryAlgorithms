@@ -1,24 +1,64 @@
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 public class Evolution {
 
 	double minRange = -0.1;
 	double maxRange = 0.1;
 	int mutationChance = 1000;
-    Chromosome chromosome;
+    List<Chromosome> population;
+    public int numParents = 2;
 	static Random random = new Random();
 
     public enum Algorithm {
         GA, ES, DE
     }
 
-    public List<Chromosome> selectParents() {
-        return null;
+    /**
+     * Selects parents for crossover
+     * @return The parents to crossover
+     */
+    private List<Chromosome> selectParents() {
+		Collections.sort(population);
+		List<Integer> ranges = new ArrayList<>();
+        final int size = population.size();
+        ranges.add(size);
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + size - index));
+
+        List<Chromosome> parents = new ArrayList<>();
+
+        //Create as many parents as desired
+        IntStream.range(0, numParents).parallel().forEach((index) -> parents.add(chooseParent(ranges)));
+
+        return parents;
     }
 
-    public Chromosome crossover(List<Network> neuralNetwork){
-        return chromosome;
+    /**
+     * 
+     * @param ranges
+     * @return
+     */
+    private Chromosome chooseParent(List<Integer> ranges){
+        double rand1 = Math.random();
+        int decideParent1 = (int)(rand1 * population.size());
+        int indexParent1 = Collections.binarySearch(ranges, decideParent1);
+
+        if(indexParent1 < 0){
+            indexParent1 = indexParent1 * -1 - 1;
+        }
+
+        return population.get(indexParent1);
+
+    }
+
+    public Chromosome crossover(){
+        //Here so it builds
+        return population.get(0);
     }
 
 	public Chromosome mutation (Chromosome child, Chromosome evoStrat) {
