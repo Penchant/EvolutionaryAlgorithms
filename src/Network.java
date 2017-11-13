@@ -291,31 +291,32 @@ public class Network implements Runnable {
         double temp;
         double max = 0;
 
-        if (percentCorrect >= 0)
+        if (percentCorrect >= 0) {
             return percentCorrect;
+        }
 
-            List<List<Double>> outputs = new ArrayList<>();
-            // For each example we set the input layer's node's inputs to the example value,
-            // then calculate the output for that example.
-            examples.forEach(example -> {
-                List<Double> networkOutput = forwardPropagate(example);
-                outputs.add(networkOutput);
-            });
-            //Setting greatest probability to 1, rest to zero of outputs
-            for (int i = 0; i < outputs.size(); i++) {
-                for (int j = 0; j < outputs.get(i).size(); i++) {
-                    temp = outputs.get(i).get(j);
-                    if(temp > max){
-                        max = temp;
-                        outputs.get(i).set(j, 1d);
-                        if(examples.get(i).outputs.get(j) == 1){
-                            numCorrect++;
-                        }
-                    }else;
-                    outputs.get(i).set(j, 0d);
-                }
+        List<List<Double>> outputs = new ArrayList<>();
+        // For each example we set the input layer's node's inputs to the example value,
+        // then calculate the output for that example.
+        examples.forEach(example -> {
+            List<Double> networkOutput = forwardPropagate(example);
+            outputs.add(networkOutput);
+        });
+        //Setting greatest probability to 1, rest to zero of outputs
+        for (int i = 0; i < outputs.size(); i++) {
+            for (int j = 0; j < outputs.get(i).size(); i++) {
+                temp = outputs.get(i).get(j);
+                if(temp > max){
+                    max = temp;
+                    outputs.get(i).set(j, 1d);
+                    if(examples.get(i).outputs.get(j) == 1){
+                        numCorrect++;
+                    }
+                }else;
+                outputs.get(i).set(j, 0d);
             }
-            percentCorrect =  numCorrect / testSet.size();
+        }
+        percentCorrect =  numCorrect / testSet.size();
 
         return percentCorrect;
     }
@@ -382,7 +383,7 @@ public class Network implements Runnable {
      * @return Returns the network represented as chromosome
      */
     public Chromosome toChromosome() {
-        return new Chromosome(this);
+        return new Chromosome(this, percentCorrect);
     }
 
     /**
