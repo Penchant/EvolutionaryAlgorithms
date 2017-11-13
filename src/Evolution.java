@@ -40,8 +40,8 @@ public class Evolution {
         Collections.sort(population);
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
-        ranges.add(size);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + size - index));
+        ranges.add(1);
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
 
         List<Chromosome> parents = new ArrayList<>();
 
@@ -66,10 +66,10 @@ public class Evolution {
     	population = sortedPop;
     }
 
-    /**
-     * 
-     * @param ranges
-     * @return
+     /**
+     * Chooses a parent for crossover probabilistically
+     * @param ranges Ranges determining probabilities
+     * @return Parent chromosome
      */
     private Chromosome chooseParent(List<Integer> ranges) {
         double rand1 = Math.random();
@@ -81,12 +81,37 @@ public class Evolution {
         }
 
         return population.get(indexParent1);
-
     }
 
-    public Chromosome crossover() {
+    /**
+     * Creates a Chromosome from 2 parents created during crossover
+     * @param parents parents to create child
+     * @return Returns child chromosome
+     */
+    public Chromosome crossover(List<Chromosome> parents) {
+
+        List<Integer> fromParent = new ArrayList<>();
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) -> {
+                double gene = Math.random();
+                if(gene >= .5) {
+                    fromParent.set(index, 0);
+                }
+                else {
+                    fromParent.set(index, 1);
+                }
+            }
+        );
+
+        Chromosome chromosome = new Chromosome();
+        chromosome.adjacencyMatrix = new double[parents.get(0).adjacencyMatrix.length][parents.get(0).adjacencyMatrix[0].length];
+
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) ->
+            IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((i) ->
+                    chromosome.adjacencyMatrix[i][index] = parents.get(fromParent.get(index)).adjacencyMatrix[i][index])
+        );
+
         //Here so it builds
-        return population.get(0);
+        return chromosome;
     }
 
     /**
@@ -96,7 +121,7 @@ public class Evolution {
     * @param epoch - this is the number of generations the child is since the first.
     * @return returns the mutated child Chromosome
     * will mutate a chromosome. it goes through each element in the chromosome
-    * and when a random numer pull (0, mutationChance] is equal 0 it will mutate that element.
+    * and when a random number (0, mutationChance] is 0 it will mutate that number.
     *
     * The mutation algorithm depends on whether it is doing creep or evolution strategy
     * based on wether the evoStrat is null or not.
