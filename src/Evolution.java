@@ -23,6 +23,7 @@ public class Evolution implements Runnable {
     public Algorithm algorithm;
     public List<Example> examples;
     static Random random = new Random();
+    Chromosome bestChromosome;
 
     public enum Algorithm {
         GA, ES, DE, BP
@@ -34,6 +35,7 @@ public class Evolution implements Runnable {
      * @param populationSize Number of individuals to have in population
      * @param numOfChildren Number of children
      */
+
     public Evolution(Algorithm algorithm, final List<Integer> hiddenLayers, List<Example> examples, int populationSize, int numOfChildren) {
         this.populationSize = populationSize;
         this.population = IntStream.range(0, populationSize)
@@ -96,6 +98,7 @@ public class Evolution implements Runnable {
     }
 
     private void backpropagation() {
+
 
     }
 
@@ -178,11 +181,17 @@ public class Evolution implements Runnable {
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
+            population.get(i).percentCorrect = population.get(i).toNetwork(examples).getPercentCorrect();
             sortedPop.add(i, population.get(i));
         }
 
         Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
         sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
+
+        bestChromosome = sortedPop.get(populationSize - 1);
+
+        System.out.println("Percent Correct of best chromosome: " + bestChromosome.percentCorrect * 100 + "%");
+
         return sortedPop;
     }
 
@@ -294,6 +303,7 @@ public class Evolution implements Runnable {
     */
     public Chromosome mutation(Chromosome child, Chromosome evoStrategy, int epoch) {
         Logger.log("Mutating", Logger.Level.shout);
+
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
                 if (Math.random() < mutationChance) {

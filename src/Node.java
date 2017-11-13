@@ -64,6 +64,13 @@ public class Node {
         }
 
         newWeights.addAll(weights);
+
+        if(nodeType.equals(Type.INPUT)){
+            weights = new ArrayList<>();
+            weights.add(1d);
+            this.weights = weights;
+
+        }
     }
 
     public double calculateOutput() {

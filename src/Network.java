@@ -39,22 +39,25 @@ public class Network implements Runnable {
      * Creates network from chromosome
      * @param chromosome chromosome to create network from
      */
-    public Network(Chromosome chromosome) {
+    public Network(Chromosome chromosome, List<Example> examples) {
         int numCols = chromosome.adjacencyMatrix[0].length;
         int numRows = chromosome.adjacencyMatrix.length;
         int priorLayerNode = -1;
-        Network net = new Network();
+
         Layer inputLayer = new Layer(Type.INPUT);
 
         List inputLayerIndices = chromosome.getLayerIndices((j) ->
-                IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] != 0));
+                IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] == 0));
+
+        this.examples = examples;
 
         // Adding nodes to layers must be done sequentially because the order is assumed to be maintained
         // so to allow getting the indices to be done in parallel, list is collected and then nodes are added
         inputLayerIndices.stream().forEach(index -> chromosome.addNodeToLayer((Integer) index, inputLayer));
 
-        net.layers.add(inputLayer);
-        boolean isOutputLayer = true;
+        this.layers.add(inputLayer);
+        priorLayerNode = (int)inputLayerIndices.get(0);
+        boolean isOutputLayer = false;
 
         while(!isOutputLayer){
             List<Integer> nextLayerIndices = chromosome.getNextLayerIndices(priorLayerNode);
@@ -65,9 +68,10 @@ public class Network implements Runnable {
 
             Layer newLayer = new Layer(0, isOutputLayer ? Type.OUTPUT : Type.HIDDEN);
             nextLayerIndices.stream().parallel().forEach((index) -> chromosome.addNodeToLayer(index, newLayer));
+            this.layers.add(newLayer);
         }
 
-        net.setNodeConnections();
+        this.setNodeConnections();
     }
 
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {
@@ -81,31 +85,15 @@ public class Network implements Runnable {
 
         Layer.network = this;
 
-
         layers.add(inputLayer = new Layer(dimension, Type.INPUT));
 
         this.fullSet = examples;
         setupExamples();
 
-        if (!isRadialBasis) {
-            if (hiddenLayers.get(0) != 0) {
-                for (int i : hiddenLayers) {
-                    layers.add(new Layer(i, Type.HIDDEN));
-                }
+        if (hiddenLayers.get(0) != 0) {
+            for (int i : hiddenLayers) {
+                layers.add(new Layer(i, Type.HIDDEN));
             }
-        } else {
-            this.hiddenLayers = 1;
-
-            Layer rbfHidden = new Layer(examples.size(), Type.RBFHIDDEN);
-
-            examples.forEach(example ->
-                rbfHidden.nodes.forEach(current -> {
-                    current.weights = new ArrayList<Double>(example.inputs);
-                    current.mu = example.outputs.get(0);
-                })
-            );
-
-            layers.add(rbfHidden);
         }
 
         layers.add(new Layer(examples.get(0).outputs.size(), Type.OUTPUT));
@@ -155,6 +143,7 @@ public class Network implements Runnable {
             testSet.add(fullSet.get(index));
             fullSet.remove(index);
         }
+
         // setup the verify examples
         for (int i = 0; i < verifySize; i++) {
             int index = ThreadLocalRandom.current().nextInt(0, fullSet.size() - 1);
@@ -174,6 +163,7 @@ public class Network implements Runnable {
             if (!file.exists()) {
                 file.createNewFile();
             }
+
             PrintWriter writer = new PrintWriter(file);
 
             int run_count = 0;
@@ -196,8 +186,6 @@ public class Network implements Runnable {
                     List<Double> networkOutput = forwardPropagate(example);
                     output.add(networkOutput.get(0));
 
-                    //System.out.println(networkOutput);
-
                     if (Double.isNaN(networkOutput.get(0))) {
                         System.err.println("NaN");
                         System.exit(1);
@@ -214,6 +202,7 @@ public class Network implements Runnable {
                         .parallelStream()
                         .mapToDouble(d -> Math.pow(d - mean, 2))
                         .sum() / (output.size() - 1);
+
                 standardDeviation = Math.sqrt(standardDeviation);
 
                 System.out.println("Mean is " + mean + " and standard deviation is " + standardDeviation);
@@ -281,7 +270,6 @@ public class Network implements Runnable {
     }
 
     /**
-     * TODO: write a description of forward propagation
      * Used for batch updates, where all examples will have their outputs calculated
      *
      * @return A [List] containing the output for each example in the examples list.
@@ -334,6 +322,7 @@ public class Network implements Runnable {
             List<Double> networkOutput = forwardPropagate(example);
             outputs.add(networkOutput);
         });
+
         //Setting greatest probability to 1, rest to zero of outputs
         for (int i = 0; i < outputs.size(); i++) {
             for (int j = 0; j < outputs.get(i).size(); i++) {
