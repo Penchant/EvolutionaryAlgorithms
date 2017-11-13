@@ -16,10 +16,10 @@ public class ReadData {
 
     public static boolean load(String path) {
         try {
-            // open file input stream
+            // Open file input stream
             BufferedReader reader = new BufferedReader(new FileReader(path));
 
-            // read file line by line
+            // Read file line by line
             String line;
             Scanner scanner = null;
 
@@ -37,7 +37,7 @@ public class ReadData {
                                 classList.add(d);
                                 break;
                             }
-                            //comparing class value to index of classIndex, set to 1
+                            // Comparing class value to index of classIndex, set to 1
                             int pos = classList.indexOf(d);
                             data.outputs.set(pos, 1d);
                             break;
@@ -48,7 +48,7 @@ public class ReadData {
                     data = new Example();
                 }
             }
-            //close reader
+            // Close reader
             reader.close();
             scanner.close();
             return true;
