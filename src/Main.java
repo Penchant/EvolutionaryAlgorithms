@@ -42,7 +42,7 @@ public class Main extends Application {
         ReadData data = new ReadData();
         try {
             ReadData.main(null);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
