@@ -28,7 +28,6 @@ public class Network implements Runnable {
     private int hiddenLayers;
     private int dimension;
 
-
     public static double learningRate = .0001d;
 
     /**
@@ -166,12 +165,12 @@ public class Network implements Runnable {
                 // For each example we set the input layer's node's inputs to the example value,
                 // then calculate the output for that example.
                 examples.forEach(example -> {
-                    Double networkOutput = forwardPropagate(example);
-                    output.add(networkOutput);
+                    List<Double> networkOutput = forwardPropagate(example);
+                    output.add(networkOutput.get(0));
 
                     //System.out.println(networkOutput);
 
-                    if (Double.isNaN(networkOutput)) {
+                    if (Double.isNaN(networkOutput.get(0))) {
                         System.err.println("NaN");
                         System.exit(1);
                     }
@@ -205,8 +204,8 @@ public class Network implements Runnable {
                     // calculate error for each example in the verifySet
                     for (int i = 0; i < verifySet.size(); i++){
                         Example example = verifySet.get(i);
-                        Double networkOutput = forwardPropagate(example);
-                        Double exampleError = Math.abs(example.outputs.get(0) - networkOutput);
+                        List<Double> networkOutput = forwardPropagate(example);
+                        Double exampleError = Math.abs(example.outputs.get(0) - networkOutput.get(0));
                         total += exampleError;
                     }
                     // average error across verifySet
@@ -237,8 +236,8 @@ public class Network implements Runnable {
         List<Boolean> correctApproximations = new ArrayList<Boolean>();
         for (int i = 0; i < testSet.size (); i++) {
             Example example = testSet.get(i);
-            Double networkOutput = forwardPropagate(example);
-            Double exampleError = Math.abs(example.outputs.get(0) - networkOutput);
+            List<Double> networkOutput = forwardPropagate(example);
+            Double exampleError = Math.abs(example.outputs.get(0) - networkOutput.get(0));
             errors.add(exampleError);
             if (exampleError <= 0.001) {
                 correctApproximations.add(true);
