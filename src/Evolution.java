@@ -3,9 +3,9 @@ import java.util.stream.IntStream;
 
 public class Evolution {
 
-    static double mutationChance = 1000;
-    static double learningRate = 0.1;
-    static double beta = 0.1;
+    static double mutationChance ;
+    static double learningRate;
+    static double beta;
     double minRange = -0.1;
     double maxRange = 0.1;
 

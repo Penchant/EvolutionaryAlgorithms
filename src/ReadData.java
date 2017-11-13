@@ -10,7 +10,7 @@ public class ReadData {
     public static List<Example> dataIn = new ArrayList<>();
     public static List<String> classList = new ArrayList<>();
 
-    public static List<Example> getExamples(){
+    public static List<Example> getExamples() {
         return dataIn;
     }
 
