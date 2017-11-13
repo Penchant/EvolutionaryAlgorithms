@@ -33,13 +33,13 @@ public class Network implements Runnable {
     /**
      * Blank constructor for Chromosome.ToNetwork()
      */
-    public Network(){}
+    public Network() {}
 
     /**
      * Creates network from chromosome
      * @param chromosome chromosome to create network from
      */
-    public Network(Chromosome chromosome){
+    public Network(Chromosome chromosome) {
         int numCols = chromosome.adjacencyMatrix[0].length;
         int numRows = chromosome.adjacencyMatrix.length;
         int priorLayerNode = -1;
@@ -71,7 +71,7 @@ public class Network implements Runnable {
     }
 
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {
-        if (hiddenLayers.get(0) == 0){
+        if (hiddenLayers.get(0) == 0) {
             this.hiddenLayers = 0;
         } else {
             this.hiddenLayers = hiddenLayers.size();
@@ -88,7 +88,7 @@ public class Network implements Runnable {
         setupExamples();
 
         if (!isRadialBasis) {
-            if (hiddenLayers.get(0) != 0){
+            if (hiddenLayers.get(0) != 0) {
                 for (int i : hiddenLayers) {
                     layers.add(new Layer(i, Type.HIDDEN));
                 }
@@ -130,7 +130,7 @@ public class Network implements Runnable {
 
         layers.add(inputLayer = new Layer(dimension, Type.INPUT));
 
-        if (hiddenLayers.get(0) != 0){
+        if (hiddenLayers.get(0) != 0) {
             for (int i : hiddenLayers) {
                 layers.add(new Layer(i, Type.HIDDEN));
             }
