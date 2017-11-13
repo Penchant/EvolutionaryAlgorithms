@@ -1,3 +1,5 @@
+import sun.rmi.runtime.Log;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -183,6 +185,9 @@ public class Evolution implements Runnable {
 
         Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
         sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
+
+        Logger.log("Percent Correct " + sortedPop.get(sortedPop.size() - 1).percentCorrect, Logger.Level.shout);
+
         return sortedPop;
     }
 
@@ -226,6 +231,8 @@ public class Evolution implements Runnable {
      * @return Returns child chromosome
      */
     public Chromosome crossover(List<Chromosome> parents) {
+        Logger.log("Crossover", Logger.Level.shout);
+        
         List<Integer> fromParent = new ArrayList();
 
         IntStream.range(0, parents.get(0).adjacencyMatrix.length).forEach((index) -> {
