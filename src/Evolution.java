@@ -63,6 +63,7 @@ public class Evolution implements Runnable {
     }
 
     private void geneticAlgorithm() {
+        
     }
     
     private void evolutionStrategies() {
