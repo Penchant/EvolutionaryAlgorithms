@@ -67,7 +67,6 @@ public class Node {
     }
 
     public double calculateOutput() {
-
         return output = activationFunction.apply(
                 IntStream.range(0, inputs.size())
                         .boxed()
