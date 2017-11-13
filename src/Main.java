@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,17 @@ public class Main extends Application {
         System.out.println("Starting");
 
         ReadData data = new ReadData();
+        try {
+            ReadData.main(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<Example> examples = data.getExamples();
 
         // Create network with examples from data generation
         if (network == null) {
-            network = new Network(hiddenLayers, inputCount, isRadialBasis, data.getExamples() );
+            network = new Network(hiddenLayers, examples.get(0).inputs.size(), isRadialBasis,  examples);
         }
 
         System.out.println("Created network");

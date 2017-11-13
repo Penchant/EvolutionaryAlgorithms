@@ -13,7 +13,7 @@ public class Chromosome implements Comparable {
      * Creates a chromosome from a network
      * @param network network to make chromosome from
      */
-    public Chromosome(Network network){
+    public Chromosome(Network network, double percentCorrect){
         List<List<Node>> multiNodes = new ArrayList<>();
         for(Layer layer : network.layers){
             multiNodes.add(layer.nodes);

@@ -43,12 +43,12 @@ public class Evolution {
      * @param ranges
      * @return
      */
-    private Chromosome chooseParent(List<Integer> ranges){
+    private Chromosome chooseParent(List<Integer> ranges) {
         double rand1 = Math.random();
         int decideParent1 = (int)(rand1 * population.size());
         int indexParent1 = Collections.binarySearch(ranges, decideParent1);
 
-        if(indexParent1 < 0){
+        if(indexParent1 < 0) {
             indexParent1 = indexParent1 * -1 - 1;
         }
 
@@ -56,11 +56,19 @@ public class Evolution {
 
     }
 
-    public Chromosome crossover(){
+    public Chromosome crossover() {
         //Here so it builds
         return population.get(0);
     }
 
+	/*
+	* Mutation
+	* will mutate a chromosome. it goes through each element in the chromosome 
+	* and when a random numer (0, mutationChance] is 0 it will mutate that number.
+	*
+	* The mutation algorithm depends on whether it is doing creep or evolution strategy
+	* based on wether the evoStrat is null or not. 
+	*/
 	public Chromosome mutation (Chromosome child, Chromosome evoStrat) {
 		for (int i = 0; i < child.adjacencyMatrix.length; i++) {
 			for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
