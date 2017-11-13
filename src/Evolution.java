@@ -21,6 +21,14 @@ public class Evolution {
         return chromosome;
     }
 
+	/*
+	* Mutation
+	* will mutate a chromosome. it goes through each element in the chromosome 
+	* and when a random numer (0, mutationChance] is 0 it will mutate that number.
+	*
+	* The mutation algorithm depends on whether it is doing creep or evolution strategy
+	* based on wether the evoStrat is null or not. 
+	*/
 	public Chromosome mutation (Chromosome child, Chromosome evoStrat) {
 		for (int i = 0; i < child.adjacencyMatrix.length; i++) {
 			for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
