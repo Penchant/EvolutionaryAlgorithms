@@ -43,17 +43,12 @@ public class Network implements Runnable {
         Network net = new Network();
         Layer inputLayer = new Layer(Type.INPUT);
 
-        List inputLayerIndices = IntStream.
-                range(0, numCols).
-                parallel().
-                filter((j) ->IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] != 0)).
-                mapToObj(obj -> obj).
-                collect(Collectors.toList());
+        List inputLayerIndices = chromosome.getLayerIndices((j) ->
+                IntStream.range(0, numRows).parallel().allMatch(i -> chromosome.adjacencyMatrix[i][j] != 0));
 
         // Adding nodes to layers must be done sequentially because the order is assumed to be maintained
         // so to allow getting the indices to be done in parallel, list is collected and then nodes are added
-        inputLayerIndices.stream().
-                forEach(index -> chromosome.addNodeToLayer((Integer) index, inputLayer));
+        inputLayerIndices.stream().forEach(index -> chromosome.addNodeToLayer((Integer) index, inputLayer));
 
         net.layers.add(inputLayer);
         boolean isOutputLayer = true;
@@ -61,7 +56,7 @@ public class Network implements Runnable {
         while(!isOutputLayer){
             List<Integer> nextLayerIndices = chromosome.getNextLayerIndices(priorLayerNode);
 
-            //Update priorLayerNode
+            // Update
             priorLayerNode = nextLayerIndices.get(0);
             isOutputLayer = chromosome.getNextLayerIndices(priorLayerNode).isEmpty();
 
@@ -73,13 +68,13 @@ public class Network implements Runnable {
     }
 
     public Network(final List<Integer> hiddenLayers, int dimension, boolean isRadialBasis, List<Example> examples) {
-        if (hiddenLayers.get(0)== 0){
+        if (hiddenLayers.get(0) == 0){
             this.hiddenLayers = 0;
         } else {
             this.hiddenLayers = hiddenLayers.size();
         }
         this.dimension = dimension;
-        this.learningRate = learningRate / examples.size();
+        learningRate = learningRate / examples.size();
 
         Layer.network = this;
 
@@ -166,7 +161,7 @@ public class Network implements Runnable {
 
                 // For each example we set the input layer's node's inputs to the example value,
                 // then calculate the output for that example.
-                examples.stream().forEach(example -> {
+                examples.forEach(example -> {
                     Double networkOutput = forwardPropagate(example);
                     output.add(networkOutput);
 
@@ -184,11 +179,10 @@ public class Network implements Runnable {
 
                 double mean = output.parallelStream().mapToDouble(d -> d).sum();
 
-                double standardDeviation = output.
-                        parallelStream().
-                        mapToDouble(d -> (d - mean)*(d - mean)).
-                        sum()
-                        /(output.size() - 1);
+                double standardDeviation = output
+                        .parallelStream()
+                        .mapToDouble(d -> Math.pow(d - mean, 2))
+                        .sum() / (output.size() - 1);
                 standardDeviation = Math.sqrt(standardDeviation);
 
                 System.out.println("Mean is " + mean + " and standard deviation is " + standardDeviation);
@@ -356,7 +350,7 @@ public class Network implements Runnable {
     /**
      * Sets the inputNodes on all nodes
      */
-    public void setNodeConnections(){
+    public void setNodeConnections() {
         IntStream.range(1, layers.size()).parallel().forEach(
                 index -> {
                     Layer currentLayer = layers.get(index);
@@ -390,16 +384,6 @@ public class Network implements Runnable {
 
         return Math.sqrt(maxDistance);
     }
-
-    class Tuple{
-        public Node node;
-        public int id;
-        public Tuple(Node node, int id){
-            this.node = node;
-            this.id = id;
-        }
-    }
-
 
     /**
      * Calculates total error from Rosenbrock inputs and output from nodes

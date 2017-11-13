@@ -50,7 +50,7 @@ public class Node {
         newWeights.addAll(weights);
     }
 
-    public Node(Type nodeType, List<Double> weights){
+    public Node(Type nodeType, List<Double> weights) {
         this.nodeType = nodeType;
         this.weights = weights;
 

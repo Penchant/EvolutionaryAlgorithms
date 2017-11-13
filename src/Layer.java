@@ -32,14 +32,14 @@ public class Layer {
 
     /**
      * Create layer with layerType and initially no nodes
-     * @param layerType the type of layer to be made
+     * @param layerType The type of layer to be made
      */
-    public Layer(Type layerType){
+    public Layer(Type layerType) {
         this(0, layerType);
         nodes = new ArrayList<>();
     }
 
-    public boolean add(Node newNode){
+    public boolean add(Node newNode) {
         return nodes.add(newNode);
     }
 
