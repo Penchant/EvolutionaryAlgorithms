@@ -44,13 +44,13 @@ public class Main extends Application {
 
         Evolution.Algorithm chosenAlgorithm = Evolution.Algorithm.GA;
 
-        if (algorithm.equals("GA")) {
+        if (algorithm.equalsIgnoreCase("GA")) {
             chosenAlgorithm = Evolution.Algorithm.GA;
-        } else if (algorithm.equals("BP")) {
+        } else if (algorithm.equalsIgnoreCase("BP")) {
             chosenAlgorithm = Evolution.Algorithm.BP;
-        } else if (algorithm.equals("ES")) {
+        } else if (algorithm.equalsIgnoreCase("ES")) {
             chosenAlgorithm = Evolution.Algorithm.ES;
-        } else if (algorithm.equals("DE")) {
+        } else if (algorithm.equalsIgnoreCase("DE")) {
             chosenAlgorithm = Evolution.Algorithm.DE;
         }
 
