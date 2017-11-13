@@ -21,7 +21,7 @@ public class Node {
     public double mu = 0;
     public double delta;
     public int id;
-    public List<Node> inputNodes = new ArrayList<Node>();
+    public List<Node> inputNodes = new ArrayList<>();
 
     private Type nodeType;
 
