@@ -83,10 +83,9 @@ public class Evolution implements Runnable {
 
     }
 
-    private void backpropagation(){
+    private void backpropagation() {
 
     }
-
 
     /**
      * Constructor for Chromosomes
