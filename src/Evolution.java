@@ -67,7 +67,6 @@ public class Evolution implements Runnable {
      */
     private void geneticAlgorithm() {
         IntStream.range(0, numOfChildren)
-                .parallel()
                 .mapToObj(i-> crossover(this.selectParents()))
                 .peek(child -> this.mutation(child, null, epoch))
                 .forEach(child -> this.population.add(child));
@@ -76,11 +75,15 @@ public class Evolution implements Runnable {
 
     private void evolutionStrategies() {
 
-        //IntStream.range(0, numOfChildren).parallel().mapToObj(i -> )
+        IntStream.range(0, numOfChildren).parallel()
+                .mapToObj(i -> crossover(this.selectParents()))
+                .peek(child -> this.mutation(child, null, epoch))
+                .forEach(child -> this.population.add(child));
+        this.population = this.selectNewPopulation(this.population);
     }
 
     private void differentialEvolution() {
-
+        //IntStream.range(0, numOfChildren).parallel().
     }
 
     private void backpropagation() {
@@ -108,12 +111,14 @@ public class Evolution implements Runnable {
         List<Integer> ranges = new ArrayList<>();
         final int size = population.size();
         ranges.add(1);
-        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index) + index + 1));
+        IntStream.range(1, population.size()).forEach(index -> ranges.add(ranges.get(index - 1) + index + 1));
 
         List<Chromosome> parents = new ArrayList<>();
 
         //Create as many parents as desired
-        IntStream.range(0, numParents).parallel().forEach((index) -> parents.add(chooseParent(ranges)));
+        parents.add(null);
+        parents.add(null);
+        IntStream.range(0, numParents).parallel().forEach((index) -> parents.set(index, chooseParent(ranges)));
 
         return parents;
     }
@@ -213,13 +218,14 @@ public class Evolution implements Runnable {
      */
     public Chromosome crossover(List<Chromosome> parents) {
         List<Integer> fromParent = new ArrayList();
-        IntStream.range(0, parents.get(0).adjacencyMatrix.length).parallel().forEach((index) -> {
+
+        IntStream.range(0, parents.get(0).adjacencyMatrix.length).forEach((index) -> {
                 double gene = Math.random();
                 if(gene >= .5) {
-                    fromParent.set(index, 0);
+                    fromParent.add(index, 0);
                 }
                 else {
-                    fromParent.set(index, 1);
+                    fromParent.add(index, 1);
                 }
             }
         );
