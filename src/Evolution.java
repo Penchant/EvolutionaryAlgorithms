@@ -58,7 +58,7 @@ public class Evolution {
     	sortedPop.add(i, population.get(i));
 
 		Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
-		sortedPop.subList(populationSize, population.size()).clear();
+		sortedPop.subList(0, (population.size() - populationSize)).clear();
 	}
 
     /**
