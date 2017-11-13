@@ -76,21 +76,21 @@ public class Evolution {
     *
     * epoch is used to aneal the non evoStrat algorithms
     */
-    public Chromosome mutation (Chromosome child, Chromosome evoStrat, int epoch) {
+    public Chromosome mutation(Chromosome child, Chromosome evoStrat, int epoch) {
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
                 int randomNum = (int)(Math.random() * mutationChance);
                 if (randomNum == 0) {
                     if (evoStrat == null) {
                         double creep = randomInRange(minRange, maxRange);
-                        if (epoch != 0)	{
+                        if (epoch != 0) {
                             double aneal = (anealFactor * 1 / (epochMultiplier * epoch) + 1);
                             creep = aneal * creep;
                         }
                         child.adjacencyMatrix[i][j] = child.adjacencyMatrix[i][j] + creep;
                     }
                     else {
-                        double creep = normalDeviation ();
+                        double creep = normalDeviation();
                         child.adjacencyMatrix[i][j] = child.adjacencyMatrix[i][j] + evoStrat.adjacencyMatrix[i][j] * creep;
                     }
                 }
@@ -118,7 +118,7 @@ public class Evolution {
     * used for mutation in the Evolution Strategy algorithm.
     * @return returns the updated evoStrat Chromosome
     */
-    public Chromosome updateEvoStrat (Chromosome evoStrat) {
+    public Chromosome updateEvoStrategy(Chromosome evoStrat) {
         for (int i = 0; i < evoStrat.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < evoStrat.adjacencyMatrix[i].length; j++) {
                 evoStrat.adjacencyMatrix [i][j] = evoStrat.adjacencyMatrix[i][j] +
@@ -131,9 +131,9 @@ public class Evolution {
     /**
     * normalDeviation
     * @return returns a random double that fits in a normal distribution
-    * 	around 0.5 between 0 and 1.
+    * around 0.5 between 0 and 1.
     */
-    private double normalDeviation () {
+    private double normalDeviation() {
         double x = (random.nextGaussian () + 4) / 8;
         if (x > 1) {
             x = 1;
