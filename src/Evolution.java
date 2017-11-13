@@ -77,6 +77,7 @@ public class Evolution implements Runnable {
 
     private void evolutionStrategies() {
 
+        //IntStream.range(0, numOfChildren).parallel().mapToObj(i -> )
     }
 
     private void differentialEvolution() {

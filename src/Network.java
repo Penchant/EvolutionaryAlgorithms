@@ -130,6 +130,12 @@ public class Network implements Runnable {
 
         layers.add(inputLayer = new Layer(dimension, Type.INPUT));
 
+        if (hiddenLayers.get(0) != 0){
+            for (int i : hiddenLayers) {
+                layers.add(new Layer(i, Type.HIDDEN));
+            }
+        }
+
         layers.add(new Layer(outputDimension, Type.OUTPUT));
         setNodeConnections();
     }
