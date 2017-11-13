@@ -20,7 +20,6 @@ public class ReadData {
             // Open file input stream
             BufferedReader reader = new BufferedReader(new FileReader(path));
 
-
             // Read file line by line
             String line;
             Scanner scanner = null;
@@ -30,15 +29,15 @@ public class ReadData {
                 scanner.useDelimiter(",");
                 while (scanner.hasNextLine()) {
                     while (scanner.hasNext()) {
-                        String d = scanner.next();
+                        String currentInput = scanner.next();
                         if (!scanner.hasNext()) {
-                            if (!classList.contains(d)) {
-                                classList.add(d);
+                            if (!classList.contains(currentInput)) {
+                                classList.add(currentInput);
                             }
-                            data.classOutput = d;
+                            data.classOutput = currentInput;
                             break;
                         }
-                        data.inputs.add(Double.parseDouble(d));
+                        data.inputs.add(Double.parseDouble(currentInput));
                     }
                     dataIn.add(data);
                     data = new Example();
@@ -50,14 +49,15 @@ public class ReadData {
                     data.outputs.set(pos, 1d);
                 });
 
-                // Close reader
-                reader.close();
+
                 scanner.close();
                 return true;
             }
+            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return false;
     }
 }
