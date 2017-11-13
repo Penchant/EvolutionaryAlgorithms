@@ -3,9 +3,11 @@ import java.util.stream.IntStream;
 
 public class Evolution {
 
+    static double mutationChance ;
+    static double learningRate;
+    static double beta;
     double minRange = -0.1;
     double maxRange = 0.1;
-    int mutationChance = 1000;
     int anealFactor = 5;
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
@@ -16,19 +18,18 @@ public class Evolution {
     static Random random = new Random();
 
     public enum Algorithm {
-        GA, ES, DE
+        GA, ES, DE, BP
     }
 
     /**
      * Constructor for Chromosomes
      * @param hiddenLayers List containing number of nodes per layer
-     * @param dimension Number of input nodes
-     * @param outputDimension Number of output nodes
      * @param populationSize Number of individuals to have in population
      * @param numOfChildren Number of children
      */
 
-    public Evolution(final List<Integer> hiddenLayers, int dimension, int outputDimension, int populationSize, int numOfChildren) {
+    public Evolution(Algorithm algorithm, final List<Integer> hiddenLayers, List<Example> examples, int populationSize, int numOfChildren) {
+
 
     }
 
@@ -131,8 +132,7 @@ public class Evolution {
     public Chromosome mutation(Chromosome child, Chromosome evoStrat, int epoch) {
         for (int i = 0; i < child.adjacencyMatrix.length; i++) {
             for (int j = i + 1; j < child.adjacencyMatrix[i].length; j++) {
-                int randomNum = (int)(Math.random() * mutationChance);
-                if (randomNum == 0) {
+                if (Math.random() < mutationChance) {
                     if (evoStrat == null) {
                         double creep = randomInRange(minRange, maxRange);
                         if (epoch != 0) {
