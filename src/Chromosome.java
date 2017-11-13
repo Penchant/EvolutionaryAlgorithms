@@ -73,8 +73,8 @@ public class Chromosome implements Comparable {
      * Converts a Chromosome to a network
      * @return Network made based off the chromosome
      */
-    public Network toNetwork() {
-        return new Network(this);
+    public Network toNetwork(List<Example> examples) {
+        return new Network(this, examples);
     }
 
     /**

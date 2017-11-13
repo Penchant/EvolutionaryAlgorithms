@@ -168,15 +168,16 @@ public class Evolution implements Runnable {
         List<Chromosome> sortedPop = new ArrayList<>();
 
         for (int i = 0; i < population.size(); i++) {
+            population.get(i).percentCorrect = population.get(i).toNetwork().getPercentCorrect();
             sortedPop.add(i, population.get(i));
         }
 
         Collections.sort(sortedPop, Comparator.comparing(s -> s.percentCorrect));
         sortedPop = sortedPop.subList((population.size() - populationSize), sortedPop.size());
 
-        bestChromosome = sortedPop.get(populationSize);
+        bestChromosome = sortedPop.get(populationSize - 1);
 
-        System.out.println("Percent Correct of best chromosome: " + bestChromosome.percentCorrect*100 + "%");
+        System.out.println("Percent Correct of best chromosome: " + bestChromosome.percentCorrect * 100 + "%");
 
         return sortedPop;
     }
