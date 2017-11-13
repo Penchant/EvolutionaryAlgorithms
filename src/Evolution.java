@@ -78,7 +78,6 @@ public class Evolution implements Runnable {
 
     }
 
-
     /**
      * Constructor for Chromosomes
      * @param hiddenLayers List containing number of nodes per layer
