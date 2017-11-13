@@ -288,7 +288,7 @@ public class Main extends Application {
 
         public static int flagLength = 6;
         public static int descriptionLength = 60;
-        public static int defaultLength = 7;
+        public static int defaultLength = 9;
         public static int parameterLength = 9;
         public Type paramType;
         private String flag;
