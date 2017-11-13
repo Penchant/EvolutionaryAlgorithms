@@ -1,21 +1,25 @@
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Evolution {
+public class Evolution implements Runnable {
 
     static double mutationChance ;
     static double learningRate;
     static double beta;
     double minRange = -0.1;
     double maxRange = 0.1;
+
     int annealFactor = 5;
-  
+
     double epochMultiplier = 0.9;
     double esUpdateParam = 0.5;
     int populationSize;
 
     List<Chromosome> population;
     public int numParents = 2;
+    public int numOfChildren;
+    public Algorithm algorithm;
     static Random random = new Random();
 
     public enum Algorithm {
@@ -29,6 +33,48 @@ public class Evolution {
      * @param numOfChildren Number of children
      */
     public Evolution(Algorithm algorithm, final List<Integer> hiddenLayers, List<Example> examples, int populationSize, int numOfChildren) {
+
+        this.populationSize = populationSize;
+        this.population = IntStream.range(0, populationSize).parallel()
+                .mapToObj(i -> new Network(hiddenLayers, examples.get(0).inputs.size(), examples.get(0).outputs.size()))
+                .map(network -> network.toChromosome())
+                .collect(Collectors.toList());
+
+        this.numOfChildren = numOfChildren;
+        this.algorithm = algorithm;
+    }
+
+    /**
+     * Run the evolutionary algorithm
+     */
+    public void run(){
+        boolean converged = false;
+        while (!converged) {
+            if (algorithm.equals(Algorithm.GA)) {
+                geneticAlgorithm();
+            } else if (algorithm.equals(Algorithm.ES)) {
+                evolutionStrategies();
+            } else if (algorithm.equals(Algorithm.DE)) {
+                differentialEvolution();
+            } else {
+                backpropagation();
+            }
+        }
+    }
+
+    private void geneticAlgorithm() {
+        
+    }
+    
+    private void evolutionStrategies() {
+
+    }
+
+    private void differentialEvolution() {
+
+    }
+
+    private void backpropagation() {
 
     }
 
