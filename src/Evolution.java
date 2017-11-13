@@ -34,9 +34,8 @@ public class Evolution implements Runnable {
      * @param numOfChildren Number of children
      */
     public Evolution(Algorithm algorithm, final List<Integer> hiddenLayers, List<Example> examples, int populationSize, int numOfChildren) {
-
         this.populationSize = populationSize;
-        this.population = IntStream.range(0, populationSize).parallel()
+        this.population = IntStream.range(0, populationSize)
                 .mapToObj(i -> new Network(hiddenLayers, examples.get(0).inputs.size(), examples.get(0).outputs.size()))
                 .map(network -> network.toChromosome())
                 .collect(Collectors.toList());

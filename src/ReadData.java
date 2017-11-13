@@ -22,7 +22,7 @@ public class ReadData {
 
             // Read file line by line
             String line;
-            Scanner scanner = null;
+            Scanner scanner;
 
             while ((line = reader.readLine()) != null) {
                 scanner = new Scanner(line);
@@ -54,10 +54,15 @@ public class ReadData {
             });
 
             reader.close();
+
+            dataIn.stream().forEach((node) -> {
+                int pos = classList.indexOf(node.classOutput);
+                IntStream.range(0, classList.size()).parallel().forEach((count) -> node.outputs.add(0d));
+                data.outputs.set(pos, 1d);
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return false;
     }
 }
